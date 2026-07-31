@@ -6,6 +6,7 @@ import javax.swing.*;
 public class Main {
     public static void main(String[] args) {
         
+        UIManager.put("Button.focus", new Color(0, 0, 0, 0));
         ArrayDeque<VendingMachine> storage = new ArrayDeque<VendingMachine>();
         JFrame menuFrame = new JFrame("Vending Machine Factory Simulator");
         menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -13,6 +14,8 @@ public class Main {
         menuFrame.setLayout(new BorderLayout());
         menuFrame.setLocationRelativeTo(null);
         menuFrame.setResizable(false);
+
+        VendingInterface vendingUX = new VendingInterface();
 
         JLabel menuSign = new JLabel();
         menuSign.setText("Vending Machine Factory Simulator");
@@ -93,14 +96,14 @@ public class Main {
         testUser.setText("Test Current Vending Machine as User");
         testUser.setBounds(75, 60, 280, 40);
         testUser.addActionListener(e -> {
-           VendingInterface.testVM(storage.peek(), menuFrame);
+           vendingUX.testUser(storage.peek(), menuFrame);
         });
 
         JButton testAdmin = new JButton();
         testAdmin.setText("Test Current Vending Machine as Admin");
         testAdmin.setBounds(75, 150, 280, 40);
         testAdmin.addActionListener(e -> {
-            VendingInterface.testAdmin(storage.peek(), menuFrame);
+            vendingUX.testAdmin(storage.peek(), menuFrame);
         });
 
         JButton testBack = new JButton();
@@ -118,7 +121,6 @@ public class Main {
                 swap.show(content, "CreateMenu");
             else
                 JOptionPane.showMessageDialog(menuFrame, "Current Vending Machine Not Yet Released To Buyer",  "Factory Alert", JOptionPane.OK_CANCEL_OPTION);
-
         });
 
         JButton test = new JButton();
