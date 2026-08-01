@@ -69,7 +69,8 @@ public class Regular extends VendingMachine {
     // carry overs from MCO1 below
     public double checkCash() {
         double totalCash = 0;
-        for (Denomination d : cashInserted.getCashList()) {
+        // PATCHED: cashInserted -> getUserCash()
+        for (Denomination d : getUserCash().getCashList()) {
             totalCash += d.getValue() * d.getQuantity();
         }
         return totalCash;
@@ -79,14 +80,17 @@ public class Regular extends VendingMachine {
         int i;
         CashStorage tempCashList;
         Denomination temp;
-        tempCashList = new CashStorage(new ArrayList<Denomination>());
-        for (Denomination d : cashStorage.getCashList()) {
-            tempCashList.addCash(new Denomination(d.getValue(),
-            d.getQuantity()));
+        
+        // PATCHED: Constructor
+        tempCashList = new CashStorage(); 
+        
+        // PATCHED: cashStorage -> getCashVault()
+        for (Denomination d : getCashVault().getCashList()) {
+            tempCashList.addCash(new Denomination(d.getValue(), d.getQuantity()));
         }
-        for (Denomination d : cashInserted.getCashList()) {
-            tempCashList.addCash(new Denomination(d.getValue(),
-            d.getQuantity()));
+        // PATCHED: cashInserted -> getUserCash()
+        for (Denomination d : getUserCash().getCashList()) {
+            tempCashList.addCash(new Denomination(d.getValue(), d.getQuantity()));
         }
         for (i = tempCashList.getCashList().size() - 1; i >= 0; i--) {
             temp = tempCashList.getCashList().get(i);
@@ -109,13 +113,15 @@ public class Regular extends VendingMachine {
         Item item = null;
         int i;
         Slots selectedItemSlot;
-        for (i = 0; i < slotList.size() && !itemFound; i++) {
-            selectedItemSlot = slotList.get(i);
+        
+        // PATCHED: slotList -> itemSlots
+        for (i = 0; i < itemSlots.size() && !itemFound; i++) {
+            selectedItemSlot = itemSlots.get(i);
             if (selectedItemSlot.getItem() != null
             && selectedItemSlot.getItem().getName().equalsIgnoreCase(name)) {
                 itemFound = true;
                 if (!selectedItemSlot.getItemList().isEmpty()) {
-                    item = selectedItemSlot.getItemList().poll(); //changed it to use.poll 
+                    item = selectedItemSlot.getItemList().poll(); // Your fix!
                     selectedItemSlot.incrementSold();
                     System.out.println("Dispensing item: " + item.getName());
                 }
@@ -134,15 +140,19 @@ public class Regular extends VendingMachine {
         Denomination temp;
         CashStorage changeDispensed;
         System.out.println("Calculating change for P" + changeAmount);
-        changeDispensed = new CashStorage(new ArrayList<Denomination>());
-        for (i = cashStorage.getCashList().size() - 1; i >= 0; i--) {
-            temp = cashStorage.getCashList().get(i);
+        
+        // PATCHED: Constructor
+        changeDispensed = new CashStorage(); 
+        
+        // PATCHED: cashStorage -> getCashVault()
+        for (i = getCashVault().getCashList().size() - 1; i >= 0; i--) {
+            temp = getCashVault().getCashList().get(i);
             while (changeAmount >= temp.getValue() && temp.getQuantity() > 0) {
                 changeAmount -= temp.getValue();
                 changeAmount = Math.round(changeAmount * 100.0) / 100.0;
-                cashStorage.removeCash(new Denomination(temp.getValue(), 1));
+                getCashVault().removeCash(new Denomination(temp.getValue(), 1));
                 changeDispensed.addCash(new Denomination(temp.getValue(), 1));
-                temp = cashStorage.getCashList().get(i);
+                temp = getCashVault().getCashList().get(i);
             }
         }
         System.out.println("Change provided successfully.");
@@ -156,7 +166,6 @@ public class Regular extends VendingMachine {
     }
 
 
-    
     // Drop this at the very bottom of Regular.java, inside the class
     public static void main(String[] args) {
         Regular testMachine = new Regular();
