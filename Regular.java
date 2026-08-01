@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+
 import java.io.FileWriter;
 import java.io.IOException;
 public class Regular extends VendingMachine {
@@ -24,7 +24,6 @@ public class Regular extends VendingMachine {
                 "Slot", "Item Name", "Price", "Starting Stock", "Ending Stock", "Sold", "Revenue"));
             writter.write("---------------------------------------------------------------------------------\n");
             
-            // Replaced slotList with the inherited itemSlots
             for (i = 0; i < itemSlots.size(); i++) { 
                 s = itemSlots.get(i);
                 if (s.getItem() != null) {
@@ -35,7 +34,6 @@ public class Regular extends VendingMachine {
                         (i + 1), s.getItem().getName(), s.getPrice(), s.getBeforeStock(), 
                         s.getCurrentStock(), s.getSold(), itemRevenue));
                     
-                    // Resets for the next audit
                     s.resetSold();
                     s.setBeforeStock(s.getCurrentStock());
                 } else {
@@ -49,7 +47,6 @@ public class Regular extends VendingMachine {
             
             totalVaultBalance = 0;
             
-            // Replaced cashStorage with getCashVault() since it is private in the parent class
             for (Denomination d : getCashVault().getCashList()) { 
                 cashTotal = d.getValue() * d.getQuantity();
                 totalVaultBalance += cashTotal;
@@ -69,7 +66,6 @@ public class Regular extends VendingMachine {
     // carry overs from MCO1 below
     public double checkCash() {
         double totalCash = 0;
-        // PATCHED: cashInserted -> getUserCash()
         for (Denomination d : getUserCash().getCashList()) {
             totalCash += d.getValue() * d.getQuantity();
         }
@@ -81,14 +77,11 @@ public class Regular extends VendingMachine {
         CashStorage tempCashList;
         Denomination temp;
         
-        // PATCHED: Constructor
         tempCashList = new CashStorage(); 
         
-        // PATCHED: cashStorage -> getCashVault()
         for (Denomination d : getCashVault().getCashList()) {
             tempCashList.addCash(new Denomination(d.getValue(), d.getQuantity()));
         }
-        // PATCHED: cashInserted -> getUserCash()
         for (Denomination d : getUserCash().getCashList()) {
             tempCashList.addCash(new Denomination(d.getValue(), d.getQuantity()));
         }
@@ -114,7 +107,6 @@ public class Regular extends VendingMachine {
         int i;
         Slots selectedItemSlot;
         
-        // PATCHED: slotList -> itemSlots
         for (i = 0; i < itemSlots.size() && !itemFound; i++) {
             selectedItemSlot = itemSlots.get(i);
             if (selectedItemSlot.getItem() != null
@@ -141,10 +133,8 @@ public class Regular extends VendingMachine {
         CashStorage changeDispensed;
         System.out.println("Calculating change for P" + changeAmount);
         
-        // PATCHED: Constructor
         changeDispensed = new CashStorage(); 
         
-        // PATCHED: cashStorage -> getCashVault()
         for (i = getCashVault().getCashList().size() - 1; i >= 0; i--) {
             temp = getCashVault().getCashList().get(i);
             while (changeAmount >= temp.getValue() && temp.getQuantity() > 0) {
@@ -166,12 +156,13 @@ public class Regular extends VendingMachine {
     }
 
 
-    // Drop this at the very bottom of Regular.java, inside the class
+
+    /* 
     public static void main(String[] args) {
         Regular testMachine = new Regular();
         
         System.out.println("Generating receipt...");
         testMachine.generateReceipt();
         System.out.println("Test complete. Check your VS Code file explorer for Receipt.txt!");
-    }
+    } */
 }

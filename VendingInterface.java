@@ -27,6 +27,8 @@ public class VendingInterface {
     private JTextArea textDisplay;
     private boolean isAdmin = false;
 
+    private VendingMachine vendingMachine;
+
     public VendingInterface(){
 
         vendingmach = new JFrame();
@@ -77,7 +79,11 @@ public class VendingInterface {
             @Override
             public void mouseClicked(MouseEvent e){
                 if(isAdmin){
-                    JOptionPane.showMessageDialog(vendingmach, "Printing statements: must write note file");
+                    if (vendingMachine instanceof Regular){
+                        ((Regular)vendingMachine).generateReceipt();
+                        JOptionPane.showMessageDialog(vendingmach, "Audit Receipt successfully generated in folder!");
+                    }
+                    
                 }
             }
         });
@@ -255,6 +261,7 @@ public class VendingInterface {
     public void testUser(VendingMachine vm, JFrame back){
         this.menuFrame = back;
         this.isAdmin = false;
+        this.vendingMachine = vm;
         dispenseDisplay.setToolTipText("Claim Ordered Item");
         slotDisplay.setToolTipText(null);
         dispDisplay.setToolTipText(null);

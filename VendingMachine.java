@@ -13,4 +13,8 @@ public class VendingMachine {
     public CashStorage getCashVault(){
         return this.cashVault;
     }
+
+    public CashStorage getUserCash(){
+        return this.userCash;
+    }
 }
