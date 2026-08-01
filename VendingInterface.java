@@ -79,14 +79,12 @@ public class VendingInterface {
             @Override
             public void mouseClicked(MouseEvent e){
                 if(isAdmin){
-                    if (vendingMachine instanceof Regular){
-                        ((Regular)vendingMachine).generateReceipt();
+                        vendingMachine.generateReceipt();
                         JOptionPane.showMessageDialog(vendingmach, "Audit Receipt successfully generated in folder!");
                     }
-                    
                 }
             }
-        });
+        );
 
         aButton = new JButton();
         aButton.setText("A");
@@ -149,7 +147,6 @@ public class VendingInterface {
             }
         });
         
-
         backButton = new JButton();
         backButton.setText("Go Back");
         backButton.setBounds(295, 475, 90, 40);
@@ -162,7 +159,6 @@ public class VendingInterface {
         textDisplay.setBounds(10, 10, 130, 130);
         textDisplay.setEditable(false);
         textDisplay.getCaret().setVisible(false);
-
 
         JLabel a1 = new JLabel();
         a1.setText("A1");
@@ -245,6 +241,86 @@ public class VendingInterface {
         slotDisplay.add(c2);
         slotDisplay.add(c3);
         dispDisplay.add(textDisplay);
+
+        java.awt.event.ActionListener padListener = e -> {
+            JButton btn = (JButton) e.getSource();
+            textDisplay.append(btn.getText());
+        };
+
+        aButton.addActionListener(padListener);
+        bButton.addActionListener(padListener);
+        cButton.addActionListener(padListener);
+        oneButton.addActionListener(padListener);
+        twoButton.addActionListener(padListener);
+        threeButton.addActionListener(padListener);
+
+        xButton.addActionListener(e -> textDisplay.setText(""));
+
+        bSButton.addActionListener(e -> {
+            String currentText = textDisplay.getText();
+            if (currentText.length() > 0) {
+                textDisplay.setText(currentText.substring(0, currentText.length() - 1));
+            }
+        });
+
+        insert.addActionListener(e -> {
+            if (!isAdmin && vendingMachine != null) {
+                double val = Double.parseDouble(denomin.getSelectedItem().toString());
+                vendingMachine.getUserCash().addCash(new Denomination(val, 1));
+                JOptionPane.showMessageDialog(vendingmach, 
+                    "Inserted: P" + val + "\nTotal Inserted: P" + vendingMachine.checkCash());
+            }
+        });
+
+        checkButton.addActionListener(e -> {
+            if (!isAdmin && vendingMachine != null) {
+                String input = textDisplay.getText();
+                int slotIndex = -1;
+                
+                switch(input) {
+                    case "A1": slotIndex = 0; break;
+                    case "A2": slotIndex = 1; break;
+                    case "A3": slotIndex = 2; break;
+                    case "B1": slotIndex = 3; break;
+                    case "B2": slotIndex = 4; break;
+                    case "B3": slotIndex = 5; break;
+                    case "C1": slotIndex = 6; break;
+                    case "C2": slotIndex = 7; break;
+                    case "C3": slotIndex = 8; break;
+                }
+
+                if (slotIndex != -1 && slotIndex < vendingMachine.itemSlots.size()) {
+                    Slots selectedSlot = vendingMachine.itemSlots.get(slotIndex);
+                    
+                    if (selectedSlot.getItem() != null && selectedSlot.getCurrentStock() > 0) {
+                        double price = selectedSlot.getPrice();
+                        double userCash = vendingMachine.checkCash();
+                        
+                        if (userCash >= price) {
+                            double change = userCash - price;
+                            
+                            if (vendingMachine.checkChangeAvailability(change)) {
+                                Item dispensed = vendingMachine.dispenseItem(selectedSlot.getItem().getName());
+                                vendingMachine.giveChange(change);
+                                JOptionPane.showMessageDialog(vendingmach, 
+                                    "Dispensed: " + dispensed.getName() + "\nChange: P" + change);
+                                textDisplay.setText("");
+                                vendingMachine.getUserCash().getCashList().clear();
+                            } else {
+                                JOptionPane.showMessageDialog(vendingmach, "Not enough change in the machine!");
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(vendingmach, "Insufficient funds! Price is P" + price);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(vendingmach, "That slot is empty or out of stock!");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(vendingmach, "Invalid Slot Code!");
+                    textDisplay.setText("");
+                }
+            }
+        });
     }
 
     public void setframeTitle(VendingMachine vm){
@@ -266,7 +342,6 @@ public class VendingInterface {
         slotDisplay.setToolTipText(null);
         dispDisplay.setToolTipText(null);
         denomButton.setToolTipText(null);
-        
         
         denomButton.setVisible(false);
         setframeTitle(vm);
