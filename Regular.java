@@ -1,7 +1,168 @@
+import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.IOException;
 public class Regular extends VendingMachine {
+
     public Regular(){
         super();
         for(int i = 0; i < 9; i++)
         itemSlots.add(new Slots(null, 0));
+    }
+
+
+
+    public void generateReceipt() {
+        try (FileWriter writter = new FileWriter("Receipt.txt")) { 
+            double totalSalesRevenue = 0;
+            int i;
+            Slots s;
+            double itemRevenue, totalVaultBalance, cashTotal;
+            
+            writter.write("Transaction Summary:\n");
+            writter.write("Items Sold:\n");
+            writter.write(String.format(" %-4s | %-15s | %-7s | %-12s | %-10s | %-6s | %-9s\n",
+                "Slot", "Item Name", "Price", "Starting Stock", "Ending Stock", "Sold", "Revenue"));
+            writter.write("---------------------------------------------------------------------------------\n");
+            
+            // Replaced slotList with the inherited itemSlots
+            for (i = 0; i < itemSlots.size(); i++) { 
+                s = itemSlots.get(i);
+                if (s.getItem() != null) {
+                    itemRevenue = s.getSold() * s.getPrice();
+                    totalSalesRevenue += itemRevenue;
+                    
+                    writter.write(String.format(" [%d]  | %-15s | P%-6.2f | %-14d | %-12d | %-6d | P%.2f\n", 
+                        (i + 1), s.getItem().getName(), s.getPrice(), s.getBeforeStock(), 
+                        s.getCurrentStock(), s.getSold(), itemRevenue));
+                    
+                    // Resets for the next audit
+                    s.resetSold();
+                    s.setBeforeStock(s.getCurrentStock());
+                } else {
+                    writter.write(String.format(" [%d]  | %-15s | %-7s | %-14s | %-12s | %-6s | %-9s\n", 
+                        (i + 1), "N/A", "-", "-", "-", "-", "-"));
+                }
+            }
+            
+            writter.write(String.format("Revenue Collected: P%.2f\n", totalSalesRevenue));
+            writter.write("Current Cash Audit:\n");
+            
+            totalVaultBalance = 0;
+            
+            // Replaced cashStorage with getCashVault() since it is private in the parent class
+            for (Denomination d : getCashVault().getCashList()) { 
+                cashTotal = d.getValue() * d.getQuantity();
+                totalVaultBalance += cashTotal;
+                if (d.getQuantity() > 0) {
+                    writter.write(String.format("  - Denomination: P%-7.2f | Count: %-4d | Subtotal: P%.2f\n", 
+                        d.getValue(), d.getQuantity(), cashTotal));
+                }
+            }
+            writter.write(String.format("Total Cash In Machine: P%.2f\n\n", totalVaultBalance));
+            
+        } catch (IOException e) {
+            System.out.println("Could not write file");
+        }
+    }
+
+
+    // carry overs from MCO1 below
+    public double checkCash() {
+        double totalCash = 0;
+        for (Denomination d : cashInserted.getCashList()) {
+            totalCash += d.getValue() * d.getQuantity();
+        }
+        return totalCash;
+    }
+
+    public boolean checkChangeAvailability(double changeAmount) {
+        int i;
+        CashStorage tempCashList;
+        Denomination temp;
+        tempCashList = new CashStorage(new ArrayList<Denomination>());
+        for (Denomination d : cashStorage.getCashList()) {
+            tempCashList.addCash(new Denomination(d.getValue(),
+            d.getQuantity()));
+        }
+        for (Denomination d : cashInserted.getCashList()) {
+            tempCashList.addCash(new Denomination(d.getValue(),
+            d.getQuantity()));
+        }
+        for (i = tempCashList.getCashList().size() - 1; i >= 0; i--) {
+            temp = tempCashList.getCashList().get(i);
+            while (changeAmount >= temp.getValue() && temp.getQuantity() > 0) {
+                changeAmount -= temp.getValue();
+                changeAmount = Math.round(changeAmount * 100.0) / 100.0;
+                tempCashList.removeCash(new Denomination(temp.getValue(), 1));
+                temp = tempCashList.getCashList().get(i);
+            }
+        }
+        if (changeAmount == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public Item dispenseItem(String name) {
+        boolean itemFound = false;
+        Item item = null;
+        int i;
+        Slots selectedItemSlot;
+        for (i = 0; i < slotList.size() && !itemFound; i++) {
+            selectedItemSlot = slotList.get(i);
+            if (selectedItemSlot.getItem() != null
+            && selectedItemSlot.getItem().getName().equalsIgnoreCase(name)) {
+                itemFound = true;
+                if (!selectedItemSlot.getItemList().isEmpty()) {
+                    item = selectedItemSlot.getItemList().poll(); //changed it to use.poll 
+                    selectedItemSlot.incrementSold();
+                    System.out.println("Dispensing item: " + item.getName());
+                }
+            }
+        }
+        if (!itemFound) {
+            System.out.println("Item not found.");
+        } else if (item == null) {
+            System.out.println("Item is out of stock.");
+        }
+        return item;
+    }
+
+    public void giveChange(double changeAmount) {
+        int i;
+        Denomination temp;
+        CashStorage changeDispensed;
+        System.out.println("Calculating change for P" + changeAmount);
+        changeDispensed = new CashStorage(new ArrayList<Denomination>());
+        for (i = cashStorage.getCashList().size() - 1; i >= 0; i--) {
+            temp = cashStorage.getCashList().get(i);
+            while (changeAmount >= temp.getValue() && temp.getQuantity() > 0) {
+                changeAmount -= temp.getValue();
+                changeAmount = Math.round(changeAmount * 100.0) / 100.0;
+                cashStorage.removeCash(new Denomination(temp.getValue(), 1));
+                changeDispensed.addCash(new Denomination(temp.getValue(), 1));
+                temp = cashStorage.getCashList().get(i);
+            }
+        }
+        System.out.println("Change provided successfully.");
+        System.out.println("Returning change to customer...");
+        for (Denomination d : changeDispensed.getCashList()) {
+            if (d.getQuantity() > 0) {
+                System.out.println("Returning " + d.getQuantity() 
+                + " of P" + d.getValue());
+            }
+        }
+    }
+
+
+    
+    // Drop this at the very bottom of Regular.java, inside the class
+    public static void main(String[] args) {
+        Regular testMachine = new Regular();
+        
+        System.out.println("Generating receipt...");
+        testMachine.generateReceipt();
+        System.out.println("Test complete. Check your VS Code file explorer for Receipt.txt!");
     }
 }

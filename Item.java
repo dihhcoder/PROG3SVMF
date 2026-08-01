@@ -22,6 +22,12 @@ public class Item
         this.calories = calories;
         this.type = type;
     }
+    
+    public Item(String name, double calories) 
+    {
+        this.name = name;
+        this.calories = calories;
+    }
 
     /**
      * Gets the product name
