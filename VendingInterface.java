@@ -1987,6 +1987,8 @@ public class VendingInterface {
                                     inChute = true;
                                     currentItem = dispensed.getName();
                                     currentChange = change;
+
+                                    refreshSlotDisplays();
                                 } else {
                                     currentSlot = "";
                                     updateScreen("Not enough change in the machine!");
@@ -2040,15 +2042,8 @@ public class VendingInterface {
         slotDisplay.setToolTipText(null);
         textDisplay.setToolTipText(null);
         denomButton.setToolTipText(null);
-        displayA1.setText(vm.itemSlots.get(0).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(0).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(0).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(0).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(0).getCurrentStock()));
-        displayA2.setText(vm.itemSlots.get(1).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(1).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(1).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(1).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(1).getCurrentStock()));
-        displayA3.setText(vm.itemSlots.get(2).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(2).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(2).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(2).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(2).getCurrentStock()));
-        displayB1.setText(vm.itemSlots.get(3).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(3).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(3).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(3).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(3).getCurrentStock()));
-        displayB2.setText(vm.itemSlots.get(4).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(4).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(4).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(4).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(4).getCurrentStock()));
-        displayB3.setText(vm.itemSlots.get(5).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(5).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(5).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(5).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(5).getCurrentStock()));
-        displayC1.setText(vm.itemSlots.get(6).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(6).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(6).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(6).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(6).getCurrentStock()));
-        displayC2.setText(vm.itemSlots.get(7).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(7).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(7).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(7).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(7).getCurrentStock()));
-        displayC3.setText(vm.itemSlots.get(8).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(8).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(8).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(8).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(8).getCurrentStock()));
+        
+        refreshSlotDisplays();
 
         updateScreen(null);
         denomButton.setVisible(false);
@@ -2200,6 +2195,38 @@ public class VendingInterface {
             C3 = null;
         } 
     }
+
+    public void refreshSlotDisplays() {
+        
+        Slots currentSlot; 
+        int i; 
+        String name; 
+        double price; 
+        int stock; 
+
+        if (vendingMachine == null) 
+            return;
+
+
+        JTextArea[] displays = {displayA1, displayA2, displayA3, displayB1, displayB2, displayB3, displayC1, displayC2, displayC3};
+        
+        for (i = 0; i < 9; i++) {
+            currentSlot = vendingMachine.itemSlots.get(i);
+            
+            if (currentSlot.getItem() != null) {
+                name = currentSlot.getItem().getName();
+                price = currentSlot.getPrice();
+                stock = currentSlot.getCurrentStock();
+
+                displays[i].setText(name + "\n(P" + String.format("%.2f", price) + ")\nQty: " + stock);
+            } else {
+                displays[i].setText("N/A\n\nQty: 0");
+            }
+        }
+    }
+
+
+    
 
     public void applySlotChanges(){
         if(this.managingSlot != null && this.managingSlot.getItem()!= null){
