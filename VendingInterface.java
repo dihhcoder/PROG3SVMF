@@ -1617,6 +1617,8 @@ public class VendingInterface {
                 managingSlot.setBeforeStock(currItemCount);
                 currItemCount = managingSlot.getCurrentStock();
                 JOptionPane.showMessageDialog(manageSelectedSlot, "Item Assigned Successfully!");
+
+                refreshSlotDisplays();
             } 
         });
 
@@ -1841,6 +1843,8 @@ public class VendingInterface {
                                     inChute = true;
                                     currentItem = dispensed.getName();
                                     currentChange = change;
+
+                                    refreshSlotDisplays();
                                 } else {
                                     currentSlot = "";
                                     updateScreen("Not enough change in the machine!");
@@ -1894,15 +1898,8 @@ public class VendingInterface {
         slotDisplay.setToolTipText(null);
         textDisplay.setToolTipText(null);
         denomButton.setToolTipText(null);
-        displayA1.setText(vm.itemSlots.get(0).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(0).getPrice()) + ")");
-        displayA2.setText(vm.itemSlots.get(1).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(1).getPrice()) + ")");
-        displayA3.setText(vm.itemSlots.get(2).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(2).getPrice()) + ")");
-        displayB1.setText(vm.itemSlots.get(3).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(3).getPrice()) + ")");
-        displayB2.setText(vm.itemSlots.get(4).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(4).getPrice()) + ")");
-        displayB3.setText(vm.itemSlots.get(5).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(5).getPrice()) + ")");
-        displayC1.setText(vm.itemSlots.get(6).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(6).getPrice()) + ")");
-        displayC2.setText(vm.itemSlots.get(7).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(7).getPrice()) + ")");
-        displayC3.setText(vm.itemSlots.get(8).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(8).getPrice()) + ")");
+        
+        refreshSlotDisplays();
 
         updateScreen(null);
         denomButton.setVisible(false);
@@ -2006,7 +2003,7 @@ public class VendingInterface {
         }
         if(vm.itemSlots.get(2).getItem() != null){
             A3 = vm.itemSlots.get(2).getItem().getName();
-            slotA3Field.setText(A2);
+            slotA3Field.setText(A3);
         } else {
             slotA3Field.setText("N/A");
             A3 = null;
@@ -2054,4 +2051,36 @@ public class VendingInterface {
             C3 = null;
         } 
     }
+
+    public void refreshSlotDisplays() {
+        
+        Slots currentSlot; 
+        int i; 
+        String name; 
+        double price; 
+        int stock; 
+
+        if (vendingMachine == null) 
+            return;
+
+
+        JTextArea[] displays = {displayA1, displayA2, displayA3, displayB1, displayB2, displayB3, displayC1, displayC2, displayC3};
+        
+        for (i = 0; i < 9; i++) {
+            currentSlot = vendingMachine.itemSlots.get(i);
+            
+            if (currentSlot.getItem() != null) {
+                name = currentSlot.getItem().getName();
+                price = currentSlot.getPrice();
+                stock = currentSlot.getCurrentStock();
+
+                displays[i].setText(name + "\n(P" + String.format("%.2f", price) + ")\nQty: " + stock);
+            } else {
+                displays[i].setText("N/A\n\nQty: 0");
+            }
+        }
+    }
+
+
+    
 }
