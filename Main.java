@@ -177,8 +177,6 @@ public class Main {
         createPanel.add(createSpe);
         createPanel.add(createBack);
         
-        
-
         menuFrame.setVisible(true);
     }
 }
