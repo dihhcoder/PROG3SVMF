@@ -1894,15 +1894,15 @@ public class VendingInterface {
         slotDisplay.setToolTipText(null);
         textDisplay.setToolTipText(null);
         denomButton.setToolTipText(null);
-        displayA1.setText(vm.itemSlots.get(0).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(0).getPrice()) + ")");
-        displayA2.setText(vm.itemSlots.get(1).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(1).getPrice()) + ")");
-        displayA3.setText(vm.itemSlots.get(2).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(2).getPrice()) + ")");
-        displayB1.setText(vm.itemSlots.get(3).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(3).getPrice()) + ")");
-        displayB2.setText(vm.itemSlots.get(4).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(4).getPrice()) + ")");
-        displayB3.setText(vm.itemSlots.get(5).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(5).getPrice()) + ")");
-        displayC1.setText(vm.itemSlots.get(6).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(6).getPrice()) + ")");
-        displayC2.setText(vm.itemSlots.get(7).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(7).getPrice()) + ")");
-        displayC3.setText(vm.itemSlots.get(8).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(8).getPrice()) + ")");
+        displayA1.setText(vm.itemSlots.get(0).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(0).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(0).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(0).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(0).getCurrentStock()));
+        displayA2.setText(vm.itemSlots.get(1).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(1).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(1).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(1).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(1).getCurrentStock()));
+        displayA3.setText(vm.itemSlots.get(2).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(2).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(2).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(2).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(2).getCurrentStock()));
+        displayB1.setText(vm.itemSlots.get(3).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(3).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(3).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(3).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(3).getCurrentStock()));
+        displayB2.setText(vm.itemSlots.get(4).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(4).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(4).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(4).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(4).getCurrentStock()));
+        displayB3.setText(vm.itemSlots.get(5).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(5).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(5).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(5).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(5).getCurrentStock()));
+        displayC1.setText(vm.itemSlots.get(6).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(6).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(6).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(6).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(6).getCurrentStock()));
+        displayC2.setText(vm.itemSlots.get(7).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(7).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(7).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(7).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(7).getCurrentStock()));
+        displayC3.setText(vm.itemSlots.get(8).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(8).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(8).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(8).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(8).getCurrentStock()));
 
         updateScreen(null);
         denomButton.setVisible(false);
