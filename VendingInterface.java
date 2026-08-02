@@ -2,7 +2,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-
+/**
+ * Constructor class for Vending Machine Interface
+ * @author Jasper Isiah Geronimo
+ * @author John Kendrick Constantino
+ */
 public class VendingInterface {
 
     private JFrame vendingmach;
@@ -43,6 +47,7 @@ public class VendingInterface {
     private double currentChange = 0.0;
     private String currentSlot = "";
     private String currentItem = "";
+    private double totalCalorie = 0.0;
     private String A1;
     private String A2;
     private String A3;
@@ -146,6 +151,9 @@ public class VendingInterface {
     private boolean comboTime;
     private ArrayList<String> ongoingComboList = new ArrayList<>();
 
+    /**
+     * Creates the vending machine interface
+     */
     public VendingInterface(){
 
         vendingmach = new JFrame();
@@ -1779,7 +1787,6 @@ public class VendingInterface {
                         managingSlot.getItemList().add(new Item(typedName, parsedCalorie, typedType));
                     }
                 }
-
                 managingSlot.setBeforeStock(currItemCount); 
                 currItemCount = managingSlot.getCurrentStock();
                 currItemPrice = parsedPrice;
@@ -1790,8 +1797,6 @@ public class VendingInterface {
             }
         }
     });
-
-        
         content.add(vendingfront, "VendingFront");
         content.add(modifySlot, "ModifySlot");
         content.add(modifyVault, "ModifyVault");
@@ -2045,7 +2050,7 @@ public class VendingInterface {
                                     currentCash = 0.00;
                                     currentSlot = "";
                                     vendingMachine.getUserCash().getCashList().clear();
-                                    updateScreen("Dispensed: " + dispensed.getName() + "\nChange: P" + String.format("%.2f", change) + "\nPlease claim item and change from the chute.");
+                                    updateScreen("Dispensed: " + dispensed.getName() + "\nChange: P" + String.format("%.2f", change) + "Calorie: " + String.format("%.2f", dispensed.getCalories()) +"\nPlease claim item and change from the chute.");
                                     inChute = true;
                                     currentItem = dispensed.getName();
                                     currentChange = change;
@@ -2075,6 +2080,9 @@ public class VendingInterface {
         });
     }
 
+    /**
+     * Sets the title on the frame depending on the vending machine type
+     */
     public void setframeTitle(VendingMachine vm){
         String vmType = null;
 
@@ -2086,6 +2094,10 @@ public class VendingInterface {
         vendingmach.setTitle(vmType);
     }
 
+    /**
+     * Updates the display on the top right of the vending machine
+     * @param errorMessage is the error message that catches errors
+     */
     public void updateScreen(String errorMessage){
         StringBuilder sb = new StringBuilder();
         sb.append("Current Cash Total: P").append(String.format("%.2f", currentCash));
@@ -2096,6 +2108,11 @@ public class VendingInterface {
         textDisplay.setText(sb.toString());
     }
 
+    /**
+     * Handles User logic
+     * @param vm is the vending machine to be tested
+     * @param back is the frame of the previous menu
+     */
     public void testUser(VendingMachine vm, JFrame back){
         this.menuFrame = back;
         this.isAdmin = false;
@@ -2114,6 +2131,11 @@ public class VendingInterface {
         vendingmach.setVisible(true);
     }
 
+    /**
+     * Handles Admin logic
+     * @param vm is the vending machine to be tested
+     * @param back is the frame of the previous menu
+     */
     public void testAdmin(VendingMachine vm, JFrame back){
         
         testUser(vm, back);
@@ -2125,6 +2147,10 @@ public class VendingInterface {
         denomButton.setVisible(true);
     }
 
+    /**
+     * Updates Denomination Fields display on admin viewing
+     * @param vm is the vending machine being tested
+     */
     public void updateDenominationFields(VendingMachine vm) {
 
         current001 = vm.getCashVault().getCashList().get(0).getQuantity();
@@ -2156,6 +2182,10 @@ public class VendingInterface {
         denom100000Field.setText(String.valueOf(current100000));
     }
 
+    /**
+     * Handles slot data to be managed
+     * @param tomanage is the slot to be updated by admin
+     */
     public void manageSlot(Slots toManage){
         if (vendingMachine instanceof Special){
             manageItemType.setVisible(true);
@@ -2192,6 +2222,10 @@ public class VendingInterface {
         }
     }
 
+    /**
+     * Displays item names of slots on the slot modification panel
+     * @param vm is the vending machine holding these slots holding items
+     */
     public void updateSlotNames(VendingMachine vm){
         if(vm.itemSlots.get(0).getItem() != null){
             A1 = vm.itemSlots.get(0).getItem().getName();
@@ -2258,6 +2292,9 @@ public class VendingInterface {
         } 
     }
 
+    /**
+     * Displays item names, price, and quantity on the vending machine interface
+     */
     public void refreshSlotDisplays() {
         
         Slots currentSlot; 
@@ -2287,6 +2324,9 @@ public class VendingInterface {
         }
     }
 
+    /**
+     * Handles slot updating logic
+     */
     public void applySlotChanges(){
         if(this.managingSlot != null && this.managingSlot.getItem()!= null){
             String newName = itemName.getText().trim();
@@ -2313,6 +2353,9 @@ public class VendingInterface {
         }
     }
     
+    /**
+     * Handles slot clearing logic
+     */
     public void removeIteminSlot(){
         this.managingSlot.getItemList().clear();
         this.managingSlot.setItem(null);
@@ -2331,8 +2374,13 @@ public class VendingInterface {
         itemCount.setText("0");
     }
     
+    /**
+     * Handles Special Combo Display logic
+     * @param comboList is the arraylist containing selected items by user
+     */
     private void startDispensingAnimation(ArrayList<String> comboList) {
         double finalChangeDisplay = currentChange;
+        double finalCalorieDisplay = totalCalorie;
         String coneName = comboList.size() > 0 ? comboList.get(0) : "Cone";
         String creamName = comboList.size() > 1 ? comboList.get(1) : "Cream";
         String toppingName = comboList.size() > 2 ? comboList.get(2) : "Topping";
@@ -2358,11 +2406,7 @@ public class VendingInterface {
                     textDisplay.setText("Finishing with " + toppingName + "...");
                     return;
                 }
-                textDisplay.setText("Dispensed: Ice Cream Combo\n" +
-                                    "Change: P" + String.format("%.2f", finalChangeDisplay) + "\n\n" +
-                                    "Please claim your item and\n" +
-                                    "change from the chute!");
-                
+                textDisplay.setText("Dispensed: Ice Cream Combo\n" + "Change: P" + String.format("%.2f", finalChangeDisplay) + "\nCalories: " + String.format("%.2f", finalCalorieDisplay) + "\nPlease claim your item and change from the chute!");
                 ((javax.swing.Timer)e.getSource()).stop();
             }
         });
@@ -2370,6 +2414,9 @@ public class VendingInterface {
         timer.start();
     }
 
+    /**
+     * Handles Special Combo Display logic
+     */
     private void handleComboSelectionStep() {
         String input = currentSlot;
         if (input == null || input.length() < 2) {
@@ -2417,11 +2464,7 @@ public class VendingInterface {
                 return;
             }
             ongoingComboList.add(targetItem.getName());
-            textDisplay.setText("Cone selected: " + targetItem.getName() + "\n\n" +
-                                "Now enter slot code\n" +
-                                "for your CREAM flavor (Row B):\n" +
-                                "(Type code and click Check)\n" +
-                                "> ");
+            textDisplay.setText("Cone selected: " + targetItem.getName() + "\n\n" + "Now enter slot code\n" + "for your CREAM flavor (Row B):\n" + "(Type code and click Check)\n" + "> ");
         } 
         else if (ongoingComboList.size() == 1) {
             if (enteredRow != 'B') {
@@ -2430,11 +2473,7 @@ public class VendingInterface {
                 return;
             }
             ongoingComboList.add(targetItem.getName());
-            textDisplay.setText("Cream selected: " + targetItem.getName() + "\n\n" +
-                                "Finally, enter slot code\n" +
-                                "for your TOPPING (Row A):\n" +
-                                "(Type code and click Check)\n" +
-                                "> ");
+            textDisplay.setText("Cream selected: " + targetItem.getName() + "\n\n" + "Finally, enter slot code\n" + "for your TOPPING (Row A):\n" + "(Type code and click Check)\n" + "> ");
         } 
         else if (ongoingComboList.size() == 2) {
             if (enteredRow != 'A') {
@@ -2452,10 +2491,12 @@ public class VendingInterface {
                 }
                 if (success) {
                     double calculationPrice = 0.0;
+                    double calculationCalorie = 0.0;
                     for (String name : ongoingComboList) {
                         for (Slots s : vendingMachine.itemSlots) {
                             if (s.getItem() != null && s.getItem().getName().equalsIgnoreCase(name)) {
                                 calculationPrice += s.getPrice();
+                                calculationCalorie += s.getItem().getCalories();
                                 break;
                             }
                         }
@@ -2468,6 +2509,7 @@ public class VendingInterface {
                     inChute = true;
                     currentItem = "Custom Ice Cream Combo";
                     currentChange = remainingChange;
+                    totalCalorie = calculationCalorie;
                     startDispensingAnimation(ongoingComboList);
                     refreshSlotDisplays(); 
                 } else {
@@ -2477,6 +2519,7 @@ public class VendingInterface {
                         inChute = true;
                         currentItem = "Returned Cash";
                         currentCash = 0.0;
+                        totalCalorie = 0.0;
                     } else {
                         textDisplay.setText("Transaction Failed!\nCheck stock levels or ensure you inserted enough cash.");
                     }
