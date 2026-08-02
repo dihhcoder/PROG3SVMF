@@ -22,6 +22,15 @@ public class VendingMachine {
         return this.userCash;
     }
 
+    public void returnCash() {
+        for (Denomination d : userCash.getCashList()) {
+            if (d.getQuantity() > 0) {
+                System.out.println("Returning " + d.getQuantity() + " of P" + d.getValue());
+            }
+        }
+        userCash = new CashStorage();
+    }
+
     public void generateReceipt() {
         try (FileWriter writter = new FileWriter("Receipt.txt")) { 
             double totalSalesRevenue = 0;

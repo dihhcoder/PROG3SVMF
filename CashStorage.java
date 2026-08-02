@@ -149,21 +149,6 @@ public class CashStorage
     }
 
     /**
-     * Removes a denomination from the cash vault
-     * @param value the value of the denomination to be removed
-     */
-    public void removeDenomination(double value){
-        int i;
-        boolean removed = false;
-        for(i = 0; i < cashList.size() && !removed; i++){
-            if(cashList.get(i).getValue() == value){
-                cashList.remove(i);
-                removed = true;
-            }
-        }
-    }
-
-    /**
      * Calculates the total monetary value stored on the cash storage
      * @return The total sum of all denominations in the cash storage
      */

@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 public class VendingInterface {
 
@@ -43,6 +42,15 @@ public class VendingInterface {
     private double currentChange = 0.0;
     private String currentSlot = "";
     private String currentItem = "";
+    private String A1;
+    private String A2;
+    private String A3;
+    private String B1;
+    private String B2;
+    private String B3;
+    private String C1;
+    private String C2;
+    private String C3;
     private int current001 = 0;
     private int current005 = 0;
     private int current010 = 0;
@@ -109,6 +117,32 @@ public class VendingInterface {
     private JButton denom100000Minus;
     private JButton denom100000Plus;
 
+    private JLabel manageTitle;
+    private JTextField slotA1Field;
+    private JTextField slotA2Field;
+    private JTextField slotA3Field;
+    private JTextField slotB1Field;
+    private JTextField slotB2Field;
+    private JTextField slotB3Field;
+    private JTextField slotC1Field;
+    private JTextField slotC2Field;
+    private JTextField slotC3Field;
+
+    private JLabel manageItemType;
+    private JTextField itemType;
+    private JTextField itemName;
+    private JTextField itemPrice;
+    private JTextField itemCalorie;
+    private JTextField itemCount;
+
+    private Slots managingSlot;
+    private String currItemName;
+    private double currItemPrice;
+    private double currItemCalorie;
+    private int currItemCount;
+    private String currItemType;
+
+
     public VendingInterface(){
 
         vendingmach = new JFrame();
@@ -136,7 +170,8 @@ public class VendingInterface {
             @Override
             public void mouseClicked(MouseEvent e){
                 if(isAdmin){
-                    JOptionPane.showMessageDialog(vendingmach, "Editing Slots");
+                    swap.show(content, "ModifySlot");
+                    updateSlotNames(vendingMachine);
                 }
             }
         });
@@ -419,12 +454,6 @@ public class VendingInterface {
                 }
             });
 
-        JPanel modifySlot = new JPanel();
-        modifySlot.setBackground(new Color(126, 217, 87));
-        modifySlot.setPreferredSize(new Dimension(450, 600));
-        modifySlot.setLayout(null);
-        modifySlot.setVisible(false);
-
         JPanel modifyVault = new JPanel();
         modifyVault.setBackground(new Color(126, 217, 87));
         modifyVault.setPreferredSize(new Dimension(450, 600));
@@ -527,6 +556,14 @@ public class VendingInterface {
                 }
             }
         });
+        denom001Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom001Field.getText().trim().isEmpty()) {
+                    denom001Field.setText("0");
+                }
+            }
+        });
 
         denom001Minus = new JButton();
         denom001Minus.setText("-");
@@ -559,6 +596,14 @@ public class VendingInterface {
                 char c = e.getKeyChar();
                 if (!Character.isDigit(c) || denom005Field.getText().length() >= 4) {
                     e.consume();
+                }
+            }
+        });
+        denom005Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom005Field.getText().trim().isEmpty()) {
+                    denom005Field.setText("0");
                 }
             }
         });
@@ -597,6 +642,14 @@ public class VendingInterface {
                 }
             }
         });
+        denom010Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom010Field.getText().trim().isEmpty()) {
+                    denom010Field.setText("0");
+                }
+            }
+        });
 
         denom010Minus = new JButton();
         denom010Minus.setText("-");
@@ -629,6 +682,14 @@ public class VendingInterface {
                 char c = e.getKeyChar();
                 if (!Character.isDigit(c) || denom025Field.getText().length() >= 4) {
                     e.consume();
+                }
+            }
+        });
+        denom025Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom025Field.getText().trim().isEmpty()) {
+                    denom025Field.setText("0");
                 }
             }
         });
@@ -667,6 +728,14 @@ public class VendingInterface {
                 }
             }
         });
+        denom100Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom100Field.getText().trim().isEmpty()) {
+                    denom100Field.setText("0");
+                }
+            }
+        });
 
         denom100Minus = new JButton();
         denom100Minus.setText("-");
@@ -699,6 +768,14 @@ public class VendingInterface {
                 char c = e.getKeyChar();
                 if (!Character.isDigit(c) || denom500Field.getText().length() >= 4) {
                     e.consume();
+                }
+            }
+        });
+        denom500Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom500Field.getText().trim().isEmpty()) {
+                    denom500Field.setText("0");
                 }
             }
         });
@@ -737,6 +814,14 @@ public class VendingInterface {
                 }
             }
         });
+        denom1000Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom1000Field.getText().trim().isEmpty()) {
+                    denom1000Field.setText("0");
+                }
+            }
+        });
 
         denom1000Minus = new JButton();
         denom1000Minus.setText("-");
@@ -769,6 +854,14 @@ public class VendingInterface {
                 char c = e.getKeyChar();
                 if (!Character.isDigit(c) || denom2000Field.getText().length() >= 4) {
                     e.consume();
+                }
+            }
+        });
+        denom2000Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom2000Field.getText().trim().isEmpty()) {
+                    denom2000Field.setText("0");
                 }
             }
         });
@@ -807,6 +900,14 @@ public class VendingInterface {
                 }
             }
         });
+        denom5000Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom5000Field.getText().trim().isEmpty()) {
+                    denom5000Field.setText("0");
+                }
+            }
+        });
 
         denom5000Minus = new JButton();
         denom5000Minus.setText("-");
@@ -839,6 +940,14 @@ public class VendingInterface {
                 char c = e.getKeyChar();
                 if (!Character.isDigit(c) || denom10000Field.getText().length() >= 4) {
                     e.consume();
+                }
+            }
+        });
+        denom10000Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom10000Field.getText().trim().isEmpty()) {
+                    denom10000Field.setText("0");
                 }
             }
         });
@@ -877,6 +986,14 @@ public class VendingInterface {
                 }
             }
         });
+        denom20000Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom20000Field.getText().trim().isEmpty()) {
+                    denom20000Field.setText("0");
+                }
+            }
+        });
 
         denom20000Minus = new JButton();
         denom20000Minus.setText("-");
@@ -912,6 +1029,14 @@ public class VendingInterface {
                 }
             }
         });
+        denom50000Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom50000Field.getText().trim().isEmpty()) {
+                    denom50000Field.setText("0");
+                }
+            }
+        });
 
         denom50000Minus = new JButton();
         denom50000Minus.setText("-");
@@ -944,6 +1069,14 @@ public class VendingInterface {
                 char c = e.getKeyChar();
                 if (!Character.isDigit(c) || denom100000Field.getText().length() >= 4) {
                     e.consume();
+                }
+            }
+        });
+        denom100000Field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (denom100000Field.getText().trim().isEmpty()) {
+                    denom100000Field.setText("0");
                 }
             }
         });
@@ -989,65 +1122,509 @@ public class VendingInterface {
         denomUpdate.setText("Update");
         denomUpdate.setBounds(45, 475, 90, 40);
         denomUpdate.addActionListener(e -> {
-            if(current001 != Integer.parseInt(denom001Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(0).setQuantity(Integer.parseInt(denom001Field.getText()));
-                current001 = Integer.parseInt(denom001Field.getText());
+
+            String typed001 = denom001Field.getText().trim();
+            String typed005 = denom005Field.getText().trim();
+            String typed010 = denom010Field.getText().trim();
+            String typed025 = denom025Field.getText().trim();
+            String typed100 = denom100Field.getText().trim();
+            String typed500 = denom500Field.getText().trim();
+            String typed1000 = denom1000Field.getText().trim();
+            String typed2000 = denom2000Field.getText().trim();
+            String typed5000 = denom5000Field.getText().trim();
+            String typed10000 = denom10000Field.getText().trim();
+            String typed20000 = denom20000Field.getText().trim();
+            String typed50000 = denom50000Field.getText().trim();
+            String typed100000 = denom100000Field.getText().trim();
+
+            String compare001 = typed001.isEmpty() ? "0" : typed001;
+            String compare005 = typed005.isEmpty() ? "0" : typed005;
+            String compare010 = typed010.isEmpty() ? "0" : typed010;
+            String compare025 = typed025.isEmpty() ? "0" : typed025;
+            String compare100 = typed100.isEmpty() ? "0" : typed100;
+            String compare500 = typed500.isEmpty() ? "0" : typed500;
+            String compare1000 = typed1000.isEmpty() ? "0" : typed1000;
+            String compare2000 = typed2000.isEmpty() ? "0" : typed2000;
+            String compare5000 = typed5000.isEmpty() ? "0" : typed5000;
+            String compare10000 = typed10000.isEmpty() ? "0" : typed10000;
+            String compare20000 = typed20000.isEmpty() ? "0" : typed20000;
+            String compare50000 = typed50000.isEmpty() ? "0" : typed50000;
+            String compare100000 = typed100000.isEmpty() ? "0" : typed100000;
+
+            if(!String.valueOf(current001).equals(compare001)){
+                vendingMachine.getCashVault().getCashList().get(0).setQuantity(Integer.parseInt(compare001));
+                current001 = Integer.parseInt(compare001);
             }
-            if(current005 != Integer.parseInt(denom005Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(1).setQuantity(Integer.parseInt(denom005Field.getText()));
-                current005 = Integer.parseInt(denom005Field.getText());
+            if(!String.valueOf(current005).equals(compare005)){
+                vendingMachine.getCashVault().getCashList().get(1).setQuantity(Integer.parseInt(compare005));
+                current005 = Integer.parseInt(compare005);
             }
-            if(current010 != Integer.parseInt(denom010Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(2).setQuantity(Integer.parseInt(denom010Field.getText()));
-                current010 = Integer.parseInt(denom010Field.getText());
+            if(!String.valueOf(current010).equals(compare010)){
+                vendingMachine.getCashVault().getCashList().get(2).setQuantity(Integer.parseInt(compare010));
+                current010 = Integer.parseInt(compare010);
             }
-            if(current025 != Integer.parseInt(denom025Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(3).setQuantity(Integer.parseInt(denom025Field.getText()));
-                current025 = Integer.parseInt(denom025Field.getText());
+            if(!String.valueOf(current025).equals(compare025)){
+                vendingMachine.getCashVault().getCashList().get(3).setQuantity(Integer.parseInt(compare025));
+                current025 = Integer.parseInt(compare025);
             }
-            if(current100 != Integer.parseInt(denom100Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(4).setQuantity(Integer.parseInt(denom100Field.getText()));
-                current100 = Integer.parseInt(denom100Field.getText());
+            if(!String.valueOf(current100).equals(compare100)){
+                vendingMachine.getCashVault().getCashList().get(4).setQuantity(Integer.parseInt(compare100));
+                current100 = Integer.parseInt(compare100);
             }
-            if(current500 != Integer.parseInt(denom500Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(5).setQuantity(Integer.parseInt(denom500Field.getText()));
-                current500 = Integer.parseInt(denom500Field.getText());
+            if(!String.valueOf(current500).equals(compare500)){
+                vendingMachine.getCashVault().getCashList().get(5).setQuantity(Integer.parseInt(compare500));
+                current500 = Integer.parseInt(compare500);
             }
-            if(current1000 != Integer.parseInt(denom1000Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(6).setQuantity(Integer.parseInt(denom1000Field.getText()));
-                current1000 = Integer.parseInt(denom1000Field.getText());
+            if(!String.valueOf(current1000).equals(compare1000)){
+                vendingMachine.getCashVault().getCashList().get(6).setQuantity(Integer.parseInt(compare1000));
+                current1000 = Integer.parseInt(compare1000);
             }
-            if(current2000 != Integer.parseInt(denom2000Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(7).setQuantity(Integer.parseInt(denom2000Field.getText()));
-                current2000 = Integer.parseInt(denom2000Field.getText());
+            if(!String.valueOf(current2000).equals(compare2000)){
+                vendingMachine.getCashVault().getCashList().get(7).setQuantity(Integer.parseInt(compare2000));
+                current2000 = Integer.parseInt(compare2000);
             }
-            if(current5000 != Integer.parseInt(denom5000Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(8).setQuantity(Integer.parseInt(denom5000Field.getText()));
-                current5000 = Integer.parseInt(denom5000Field.getText());
+            if(!String.valueOf(current5000).equals(compare5000)){
+                vendingMachine.getCashVault().getCashList().get(8).setQuantity(Integer.parseInt(compare5000));
+                current5000 = Integer.parseInt(compare5000);
             }
-            if(current10000 != Integer.parseInt(denom10000Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(9).setQuantity(Integer.parseInt(denom10000Field.getText()));
-                current10000 = Integer.parseInt(denom10000Field.getText());
+            if(!String.valueOf(current10000).equals(compare10000)){
+                vendingMachine.getCashVault().getCashList().get(9).setQuantity(Integer.parseInt(compare10000));
+                current10000 = Integer.parseInt(compare10000);
             }
-            if(current20000 != Integer.parseInt(denom20000Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(10).setQuantity(Integer.parseInt(denom20000Field.getText()));
-                current20000 = Integer.parseInt(denom20000Field.getText());
+            if(!String.valueOf(current20000).equals(compare20000)){
+                vendingMachine.getCashVault().getCashList().get(10).setQuantity(Integer.parseInt(compare20000));
+                current20000 = Integer.parseInt(compare20000);
             }
-            if(current50000 != Integer.parseInt(denom50000Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(11).setQuantity(Integer.parseInt(denom50000Field.getText()));
-                current50000 = Integer.parseInt(denom50000Field.getText());
+            if(!String.valueOf(current50000).equals(compare50000)){
+                vendingMachine.getCashVault().getCashList().get(11).setQuantity(Integer.parseInt(compare50000));
+                current50000 = Integer.parseInt(compare50000);
             }
-            if(current100000 != Integer.parseInt(denom100000Field.getText())){
-                vendingMachine.getCashVault().getCashList().get(12).setQuantity(Integer.parseInt(denom100000Field.getText()));
-                current100000 = Integer.parseInt(denom100000Field.getText());
+            if(!String.valueOf(current100000).equals(compare100000)){
+                vendingMachine.getCashVault().getCashList().get(12).setQuantity(Integer.parseInt(compare100000));
+                current100000 = Integer.parseInt(compare100000);
             }
         });
 
+        JPanel modifySlot = new JPanel();
+        modifySlot.setBackground(new Color(126, 217, 87));
+        modifySlot.setPreferredSize(new Dimension(450, 600));
+        modifySlot.setLayout(null);
+        modifySlot.setVisible(false);
+
+        JButton slotBack = new JButton();
+        slotBack.setText("Go Back");
+        slotBack.setBounds(295, 475, 90, 40);
+        slotBack.addActionListener(e -> {
+                swap.show(content, "VendingFront");
+        });
+
+        JLabel slotIns = new JLabel();
+        slotIns.setText("Modify Slot");
+        slotIns.setForeground(Color.WHITE);
+        slotIns.setFont(new Font("Arial Black", Font.PLAIN, 20));
+        slotIns.setBounds(40, 10, 250, 30);
+
+        JLabel slotNameLabel = new JLabel("Slot:");
+        slotNameLabel.setForeground(Color.WHITE);
+        slotNameLabel.setFont(new Font("Arial Black", Font.PLAIN, 12));
+        slotNameLabel.setBounds(20, 50, 100, 20);
+
+        JLabel slotItemLabel = new JLabel("Item:");
+        slotItemLabel.setForeground(Color.WHITE);
+        slotItemLabel.setFont(new Font("Arial Black", Font.PLAIN, 12));
+        slotItemLabel.setBounds(60, 50, 100, 20);
+
+        JLabel slotA1 = new JLabel("A1");
+        slotA1.setForeground(Color.WHITE);
+        slotA1.setFont(new Font("Arial Black", Font.PLAIN, 12));
+        slotA1.setBounds(20, 80, 100, 20);
+
+        JLabel slotA2 = new JLabel("A2");
+        slotA2.setForeground(Color.WHITE);
+        slotA2.setFont(new Font("Arial Black", Font.PLAIN, 12));
+        slotA2.setBounds(20, 120, 100, 20);
+
+        JLabel slotA3 = new JLabel("A3");
+        slotA3.setForeground(Color.WHITE);
+        slotA3.setFont(new Font("Arial Black", Font.PLAIN, 12));
+        slotA3.setBounds(20, 160, 100, 20);
+
+        JLabel slotB1 = new JLabel("B1");
+        slotB1.setForeground(Color.WHITE);
+        slotB1.setFont(new Font("Arial Black", Font.PLAIN, 12));
+        slotB1.setBounds(20, 200, 100, 20);
+
+        JLabel slotB2 = new JLabel("B2");
+        slotB2.setForeground(Color.WHITE);
+        slotB2.setFont(new Font("Arial Black", Font.PLAIN, 12));
+        slotB2.setBounds(20, 240, 100, 20);
+
+        JLabel slotB3 = new JLabel("B3");
+        slotB3.setForeground(Color.WHITE);
+        slotB3.setFont(new Font("Arial Black", Font.PLAIN, 12));
+        slotB3.setBounds(20, 280, 100, 20);
+
+        JLabel slotC1 = new JLabel("C1");
+        slotC1.setForeground(Color.WHITE);
+        slotC1.setFont(new Font("Arial Black", Font.PLAIN, 12));
+        slotC1.setBounds(20, 320, 100, 20);
+
+        JLabel slotC2 = new JLabel("C2");
+        slotC2.setForeground(Color.WHITE);
+        slotC2.setFont(new Font("Arial Black", Font.PLAIN, 12));
+        slotC2.setBounds(20, 360, 100, 20);
+
+        JLabel slotC3 = new JLabel("C3");
+        slotC3.setForeground(Color.WHITE);
+        slotC3.setFont(new Font("Arial Black", Font.PLAIN, 12));
+        slotC3.setBounds(20, 400, 100, 20);
+
+        slotA1Field = new JTextField();
+        slotA1Field.setBounds(60, 80, 200, 20);
+        slotA1Field.setEditable(false);
+        slotA1Field.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
+        slotA2Field = new JTextField();
+        slotA2Field.setBounds(60, 120, 200, 20);
+        slotA2Field.setEditable(false);
+        slotA2Field.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
+        slotA3Field = new JTextField();
+        slotA3Field.setBounds(60, 160, 200, 20);
+        slotA3Field.setEditable(false);
+        slotA3Field.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
+        slotB1Field = new JTextField();
+        slotB1Field.setBounds(60, 200, 200, 20);
+        slotB1Field.setEditable(false);
+        slotB1Field.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
+        slotB2Field = new JTextField();
+        slotB2Field.setBounds(60, 240, 200, 20);
+        slotB2Field.setEditable(false);
+        slotB2Field.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
+        slotB3Field = new JTextField();
+        slotB3Field.setBounds(60, 280, 200, 20);
+        slotB3Field.setEditable(false);
+        slotB3Field.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
+        slotC1Field = new JTextField();
+        slotC1Field.setBounds(60, 320, 200, 20);
+        slotC1Field.setEditable(false);
+        slotC1Field.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
+        slotC2Field = new JTextField();
+        slotC2Field.setBounds(60, 360, 200, 20);
+        slotC2Field.setEditable(false);
+        slotC2Field.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
+        slotC3Field = new JTextField();
+        slotC3Field.setBounds(60, 400, 200, 20);
+        slotC3Field.setEditable(false);
+        slotC3Field.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
+        JButton manageA1 = new JButton();
+        manageA1.setText("Manage");
+        manageA1.setBounds(300, 80, 100, 20);
+        manageA1.addActionListener(e -> {
+            manageTitle.setText("Manage A1");
+            swap.show(content, "ManageSlot");
+            manageSlot(vendingMachine.itemSlots.get(0));
+        });
+
+        JButton manageA2 = new JButton();
+        manageA2.setText("Manage");
+        manageA2.setBounds(300, 120, 100, 20);
+        manageA2.addActionListener(e -> {
+            manageTitle.setText("Manage A2");
+            swap.show(content, "ManageSlot");
+            manageSlot(vendingMachine.itemSlots.get(1));
+        });
+
+        JButton manageA3 = new JButton();
+        manageA3.setText("Manage");
+        manageA3.setBounds(300, 160, 100, 20);
+        manageA3.addActionListener(e -> {
+            manageTitle.setText("Manage A3");
+            swap.show(content, "ManageSlot");
+            manageSlot(vendingMachine.itemSlots.get(2));
+        });
+
+        JButton manageB1 = new JButton();
+        manageB1.setText("Manage");
+        manageB1.setBounds(300, 200, 100, 20);
+        manageB1.addActionListener(e -> {
+            manageTitle.setText("Manage B1");
+            swap.show(content, "ManageSlot");
+            manageSlot(vendingMachine.itemSlots.get(3));
+        });
+
+        JButton manageB2 = new JButton();
+        manageB2.setText("Manage");
+        manageB2.setBounds(300, 240, 100, 20);
+        manageB2.addActionListener(e -> {
+            manageTitle.setText("Manage B2");
+            swap.show(content, "ManageSlot");
+            manageSlot(vendingMachine.itemSlots.get(4));
+        });
+
+        JButton manageB3 = new JButton();
+        manageB3.setText("Manage");
+        manageB3.setBounds(300, 280, 100, 20);
+        manageB3.addActionListener(e -> {
+            manageTitle.setText("Manage B3");
+            swap.show(content, "ManageSlot");
+            manageSlot(vendingMachine.itemSlots.get(5));
+        });
+
+        JButton manageC1 = new JButton();
+        manageC1.setText("Manage");
+        manageC1.setBounds(300, 320, 100, 20);
+        manageC1.addActionListener(e -> {
+            manageTitle.setText("Manage C1");
+            swap.show(content, "ManageSlot");
+            manageSlot(vendingMachine.itemSlots.get(6));
+        });
+
+        JButton manageC2 = new JButton();
+        manageC2.setText("Manage");
+        manageC2.setBounds(300, 360, 100, 20);
+        manageC2.addActionListener(e -> {
+            manageTitle.setText("Manage C2");
+            swap.show(content, "ManageSlot");
+            manageSlot(vendingMachine.itemSlots.get(7));
+        });
+
+        JButton manageC3 = new JButton();
+        manageC3.setText("Manage");
+        manageC3.setBounds(300, 400, 100, 20);
+        manageC3.addActionListener(e -> {
+            manageTitle.setText("Manage C3");
+            swap.show(content, "ManageSlot");
+            manageSlot(vendingMachine.itemSlots.get(8));
+        });
+
+        JPanel manageSelectedSlot = new JPanel();
+        manageSelectedSlot.setBackground(new Color(126, 217, 87));
+        manageSelectedSlot.setPreferredSize(new Dimension(450, 600));
+        manageSelectedSlot.setLayout(null);
+        manageSelectedSlot.setVisible(false);
+
+        manageTitle = new JLabel();
+        manageTitle.setFont(new Font("Arial Black", Font.PLAIN, 20));
+        manageTitle.setForeground(Color.WHITE);
+        manageTitle.setBounds(40, 10, 250, 30);
+
+        JLabel manageItemName = new JLabel("Item Name:");
+        manageItemName.setFont(new Font("Arial Black", Font.PLAIN, 18));
+        manageItemName.setForeground(Color.WHITE);
+        manageItemName.setBounds(50, 50, 250, 30);
+
+        itemName = new JTextField();
+        itemName.setBounds(50, 90, 350, 30);
+
+        JLabel manageItemPrice = new JLabel("Price:");
+        manageItemPrice.setFont(new Font("Arial Black", Font.PLAIN, 18));
+        manageItemPrice.setForeground(Color.WHITE);
+        manageItemPrice.setBounds(50, 130, 250, 30);
+
+        itemPrice = new JTextField();
+        itemPrice.setBounds(50, 170, 350, 30);
+        itemPrice.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (itemPrice.getText().trim().isEmpty()) {
+                    itemPrice.setText("0.0");
+                }
+            }
+        });
+
+        JLabel manageItemCalorie = new JLabel("Calories:");
+        manageItemCalorie.setFont(new Font("Arial Black", Font.PLAIN, 18));
+        manageItemCalorie.setForeground(Color.WHITE);
+        manageItemCalorie.setBounds(50, 210, 250, 30);
+
+        itemCalorie = new JTextField();
+        itemCalorie.setBounds(50, 250, 350, 30);
+        itemCalorie.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (itemCalorie.getText().trim().isEmpty()) {
+                    itemCalorie.setText("0.0");
+                }
+            }
+        });
+
+        JLabel manageItemCount = new JLabel("Quantity:");
+        manageItemCount.setFont(new Font("Arial Black", Font.PLAIN, 18));
+        manageItemCount.setForeground(Color.WHITE);
+        manageItemCount.setBounds(50, 290, 250, 30);
+
+        itemCount = new JTextField();
+        itemCount.setBounds(110, 320, 60, 30);
+        itemCount.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                if (itemCount.getText().trim().isEmpty()) {
+                    itemCount.setText("0");
+                }
+            }
+        });
+
+        JButton itemMinus = new JButton();
+        itemMinus.setText("-");
+        itemMinus.setBounds(50, 320, 50, 30);
+        itemMinus.addActionListener(e -> {
+            int currentQuantity = Integer.parseInt(itemCount.getText());
+            if (currentQuantity > 0) {
+                currentQuantity--;
+                itemCount.setText(String.valueOf(currentQuantity));
+            }
+        });
+
+        JButton itemPlus = new JButton();
+        itemPlus.setText("+");
+        itemPlus.setBounds(180, 320, 50, 30);
+        itemPlus.addActionListener(e -> {
+            int currentQuantity = Integer.parseInt(itemCount.getText());
+            if (currentQuantity < 10) {
+                currentQuantity++;
+                itemCount.setText(String.valueOf(currentQuantity));
+            }
+        });
+
+        manageItemType = new JLabel("Type:");
+        manageItemType.setFont(new Font("Arial Black", Font.PLAIN, 18));
+        manageItemType.setForeground(Color.WHITE);
+        manageItemType.setBounds(250, 290, 250, 30);
+
+        
+        itemType = new JTextField();
+        itemType.setBounds(250, 320, 100, 30);
+        itemType.setEditable(false);
+
+        JButton manageBack = new JButton();
+        manageBack.setText("Go Back");
+        manageBack.setBounds(295, 475, 90, 40);
+        manageBack.addActionListener(e -> {
+                swap.show(content, "ModifySlot");
+        });
+
+        JButton remove = new JButton();
+        remove.setText("Go Back");
+        remove.setBounds(125, 475, 90, 40);
+        remove.addActionListener(e -> {
+                //removes slot items
+        });
 
 
+        JButton updateSlot = new JButton();
+        updateSlot.setText("Update");
+        updateSlot.setBounds(45, 475, 90, 40);
+        updateSlot.addActionListener(e -> {
+            String typedName = itemName.getText();
+            String typedPrice = itemPrice.getText();
+            String typedCalorie = itemCalorie.getText();
+            String typedCount = itemCount.getText();
+            String typedType = itemType.getText();
+
+            String comparePrice = typedPrice.isBlank() ? "0.0" : typedPrice;
+            String compareCalorie = typedCalorie.isBlank() ? "0.0" : typedCalorie;
+            String compareCount = typedCount.isBlank() ? "0" : typedCount;
+            Item currItem = managingSlot.getItem();
+
+            if(typedName.isBlank()){
+                JOptionPane.showMessageDialog(manageSelectedSlot, "Item must exist! Error!");
+            } else if (currItem == null || !typedName.equalsIgnoreCase(currItem.getName())){
+                currItemName = typedName;
+                vendingMachine.generateReceipt();
+                managingSlot.getItemList().clear();
+                managingSlot.setBeforeStock(0);
+                managingSlot.resetSold();
+                managingSlot.setPrice(Double.parseDouble(typedPrice));
+                if(vendingMachine instanceof Regular){
+                    managingSlot.setItem(new Item(typedName, Double.parseDouble(typedCalorie)));
+                    for(int i = 0; i < Integer.parseInt(typedCount); i++){
+                        managingSlot.getItemList().add(new Item(typedName, Double.parseDouble(typedCalorie)));
+                    }
+                } else if (vendingMachine instanceof Special){
+                    managingSlot.setItem(new Item(typedName, Double.parseDouble(typedCalorie), typedType));
+                    for(int i = 0; i < Integer.parseInt(typedCount); i++){
+                        managingSlot.getItemList().add(new Item(typedName, Double.parseDouble(typedCalorie), typedType));
+                    }
+                }
+                currItemPrice = Double.parseDouble(comparePrice);
+                currItemCount = Integer.parseInt(compareCount);
+                currItemCalorie = Double.parseDouble(compareCalorie);
+            } else if (typedName.equalsIgnoreCase(currItem.getName())){
+                currItemPrice = Double.parseDouble(typedPrice);
+                managingSlot.setPrice(currItemPrice);
+                currItemCalorie = Double.parseDouble(typedCalorie);
+                int targetCount = Integer.parseInt(typedCount);
+                if(vendingMachine instanceof Regular){
+                    managingSlot.setItem(new Item(typedName, currItemCalorie));
+                } else if(vendingMachine instanceof Special){
+                    managingSlot.setItem(new Item(typedName, currItemCalorie, typedType));
+                }
+                managingSlot.getItemList().clear();
+                
+                if (vendingMachine instanceof Regular){
+                    for(int i = 0; i < targetCount; i++){
+                        managingSlot.getItemList().add(new Item(typedName, currItemCalorie));
+                    }
+                } else if (vendingMachine instanceof Special){
+                    for(int i = 0; i < targetCount; i++){
+                        managingSlot.getItemList().add(new Item(typedName, currItemCalorie, typedType));
+                    }
+                }
+                managingSlot.setBeforeStock(currItemCount);
+                currItemCount = managingSlot.getCurrentStock();
+                JOptionPane.showMessageDialog(manageSelectedSlot, "Item Assigned Successfully!");
+            } 
+        });
+
+        
         content.add(vendingfront, "VendingFront");
         content.add(modifySlot, "ModifySlot");
         content.add(modifyVault, "ModifyVault");
+        content.add(manageSelectedSlot, "ManageSlot");
         vendingmach.add(content, BorderLayout.CENTER);
         vendingfront.add(slotDisplay);
         vendingfront.add(dispenseDisplay);
@@ -1141,6 +1718,55 @@ public class VendingInterface {
         modifyVault.add(denom100000Minus);
         modifyVault.add(denom100000Plus);
 
+        modifySlot.add(slotIns);
+        modifySlot.add(slotBack);
+        modifySlot.add(slotNameLabel);
+        modifySlot.add(slotItemLabel);
+        modifySlot.add(slotA1);
+        modifySlot.add(slotA2);
+        modifySlot.add(slotA3);
+        modifySlot.add(slotB1);
+        modifySlot.add(slotB2);
+        modifySlot.add(slotB3);
+        modifySlot.add(slotC1);
+        modifySlot.add(slotC2);
+        modifySlot.add(slotC3);
+        modifySlot.add(slotA1Field);
+        modifySlot.add(slotA2Field);
+        modifySlot.add(slotA3Field);
+        modifySlot.add(slotB1Field);
+        modifySlot.add(slotB2Field);
+        modifySlot.add(slotB3Field);
+        modifySlot.add(slotC1Field);
+        modifySlot.add(slotC2Field);
+        modifySlot.add(slotC3Field);
+        modifySlot.add(manageA1);
+        modifySlot.add(manageA2);
+        modifySlot.add(manageA3);
+        modifySlot.add(manageB1);
+        modifySlot.add(manageB2);
+        modifySlot.add(manageB3);
+        modifySlot.add(manageC1);
+        modifySlot.add(manageC2);
+        modifySlot.add(manageC3);
+
+        manageSelectedSlot.add(manageTitle);
+        manageSelectedSlot.add(manageItemName);
+        manageSelectedSlot.add(itemName);
+        manageSelectedSlot.add(itemCalorie);
+        manageSelectedSlot.add(manageItemCalorie);
+        manageSelectedSlot.add(manageItemPrice);
+        manageSelectedSlot.add(itemPrice);
+        manageSelectedSlot.add(manageItemType);
+        manageSelectedSlot.add(itemType);
+        manageSelectedSlot.add(manageBack);
+        manageSelectedSlot.add(updateSlot);
+        manageSelectedSlot.add(manageItemCount);
+        manageSelectedSlot.add(itemCount);
+        manageSelectedSlot.add(itemPlus);
+        manageSelectedSlot.add(itemMinus);
+
+
         java.awt.event.ActionListener padListener = e -> {
             JButton btn = (JButton) e.getSource();
             if(currentSlot.length() < 2){
@@ -1169,7 +1795,7 @@ public class VendingInterface {
         });
 
         insert.addActionListener(e -> {
-            if (!isAdmin && vendingMachine != null) {
+            if (vendingMachine != null) {
                 double val = Double.parseDouble(denomin.getSelectedItem().toString());
                 vendingMachine.getUserCash().addCash(new Denomination(val, 1));
                 currentCash = vendingMachine.getUserCash().getTotalValue();
@@ -1178,7 +1804,7 @@ public class VendingInterface {
         });
 
         checkButton.addActionListener(e -> {
-            if (!isAdmin && vendingMachine != null) {
+            if (vendingMachine != null) {
                 String input = currentSlot;
                 int slotIndex = -1;
                 
@@ -1325,5 +1951,107 @@ public class VendingInterface {
         denom20000Field.setText(String.valueOf(current20000));
         denom50000Field.setText(String.valueOf(current50000));
         denom100000Field.setText(String.valueOf(current100000));
+    }
+
+    public void manageSlot(Slots toManage){
+        if (vendingMachine instanceof Special){
+            manageItemType.setVisible(true);
+            itemType.setVisible(true);
+        } else {
+            manageItemType.setVisible(false);
+            itemType.setVisible(false);
+        }
+
+        this.managingSlot = toManage;
+
+        if (toManage.getItem() != null) {
+            currItemName = toManage.getItem().getName();
+            itemName.setText(currItemName);
+            currItemPrice = toManage.getPrice();
+            itemPrice.setText(String.valueOf(currItemPrice));
+            currItemCalorie = toManage.getItem().getCalories();
+            itemCalorie.setText(String.valueOf(currItemCalorie));
+            currItemCount = toManage.getCurrentStock();
+            itemCount.setText(String.valueOf(currItemCount));
+            if(toManage.getItem().getType() != null) {
+                currItemType = toManage.getItem().getType();
+                itemType.setText(currItemType);
+            }
+        } else {
+            currItemName = null;
+            currItemPrice = 0.0;
+            currItemCalorie = 0.0;
+            currItemCount = 0;
+            itemName.setText("");
+            itemPrice.setText("");
+            itemCalorie.setText("");
+            itemCount.setText("");
+        }
+    }
+
+    public void updateSlotNames(VendingMachine vm){
+        if(vm.itemSlots.get(0).getItem() != null){
+            A1 = vm.itemSlots.get(0).getItem().getName();
+            slotA1Field.setText(A1);
+        } else {
+            slotA1Field.setText("N/A");
+            A1 = null;
+        }
+        if(vm.itemSlots.get(1).getItem() != null){
+            A2 = vm.itemSlots.get(1).getItem().getName();
+            slotA2Field.setText(A2);
+        } else {
+            slotA2Field.setText("N/A");
+            A2 = null;
+        }
+        if(vm.itemSlots.get(2).getItem() != null){
+            A3 = vm.itemSlots.get(2).getItem().getName();
+            slotA3Field.setText(A2);
+        } else {
+            slotA3Field.setText("N/A");
+            A3 = null;
+        }
+        if(vm.itemSlots.get(3).getItem() != null){
+            B1 = vm.itemSlots.get(3).getItem().getName();
+            slotB1Field.setText(B1);
+        } else {
+            slotB1Field.setText("N/A");
+            B1 = null;
+        } 
+        if(vm.itemSlots.get(4).getItem() != null){
+            B2 = vm.itemSlots.get(4).getItem().getName();
+            slotB2Field.setText(B2);
+        } else {
+            slotB2Field.setText("N/A");
+            B2 = null;
+        } 
+        if(vm.itemSlots.get(5).getItem() != null){
+            B3 = vm.itemSlots.get(5).getItem().getName();
+            slotB3Field.setText(B3);
+        } else {
+            slotB3Field.setText("N/A");
+            B3 = null;
+        } 
+        if(vm.itemSlots.get(6).getItem() != null){
+            C1 = vm.itemSlots.get(6).getItem().getName();
+            slotC1Field.setText(C1);
+        } else {
+            slotC1Field.setText("N/A");
+            C1 = null;
+        } 
+        if(vm.itemSlots.get(7).getItem() != null){
+            C2 = vm.itemSlots.get(7).getItem().getName();
+            slotC2Field.setText(C2);
+        } else {
+            slotC2Field.setText("N/A");
+            C2 = null;
+        } 
+        if(vm.itemSlots.get(7).getItem() != null){
+            C3 = vm.itemSlots.get(8).getItem().getName();
+            slotC3Field.setText(C3);
+        } else {
+            slotC3Field.setText("N/A");
+            C3 = null;
+        } 
     }
 }

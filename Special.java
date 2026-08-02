@@ -7,19 +7,27 @@ public class Special extends VendingMachine {
         
         itemSlots.clear();
         
-        Slots coneSlot = new Slots(new Item(null, 0, "Cone"), 100);
-        Slots creamSlot = new Slots(new Item(null, 0, "Cream"), 50);
-        Slots toppingSlot = new Slots(new Item(null, 0, "Topping"), 25);
+        Slots coneSlot = new Slots(new Item(null, 0, "Cone"), 0);
+        Slots creamSlot = new Slots(new Item(null, 0, "Cream"), 0);
+        Slots toppingSlot = new Slots(new Item(null, 0, "Topping"), 0);
         
         for (int i = 0; i < 10; i++) {
             coneSlot.addItem();
             creamSlot.addItem();
             toppingSlot.addItem();
         }
-        
-        itemSlots.add(coneSlot);
-        itemSlots.add(creamSlot);
-        itemSlots.add(toppingSlot);
+
+        for (int i = 0; i < 3; i++) {
+            itemSlots.add(toppingSlot);
+        }
+
+        for (int i = 0; i < 3; i++) {
+            itemSlots.add(creamSlot);
+        }
+
+        for (int i = 0; i < 3; i++) {
+            itemSlots.add(coneSlot);
+        }
     }
 
 
