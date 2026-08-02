@@ -12,7 +12,6 @@ public class CashStorage
      * Creates a CashStorage with regards to the current PHP Denominations
      * <p>
      * Stores them in increasing order
-     * @param cashList The ArrayList which stores the denominations
      */
     public CashStorage()
     {

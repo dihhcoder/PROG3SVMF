@@ -28,6 +28,7 @@ public class Special extends VendingMachine {
     /**
      * Checks if item combos fit a valid combination
      * Also checks for payment errors in the combination process
+     * @param comboList is the list that contains all chosen items for combination
      * @return true if process is valid, else false
      */
     public boolean processCombo(ArrayList<String> comboList) {

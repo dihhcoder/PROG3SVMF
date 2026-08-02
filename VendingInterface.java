@@ -1737,7 +1737,7 @@ public class VendingInterface {
         int parsedCount = Integer.parseInt(safeCount);
         
         if (typedName.isBlank()) {
-            JOptionPane.showMessageDialog(manageSelectedSlot, "Item name must exist! Error!");
+            JOptionPane.showMessageDialog(manageSelectedSlot, "Error! Item name must exist!");
         } else {
             Item currItem = managingSlot.getItem();
             if (currItem == null || !typedName.equalsIgnoreCase(currItem.getName())) {    
@@ -1961,7 +1961,7 @@ public class VendingInterface {
         twoButton.addActionListener(padListener);
         threeButton.addActionListener(padListener);
 
-            xButton.addActionListener(e -> {
+        xButton.addActionListener(e -> {
             if (vendingMachine != null) {
                 double cashToReturn = vendingMachine.getUserCash().getTotalValue();
                 
@@ -1977,9 +1977,7 @@ public class VendingInterface {
                     ongoingComboList.clear();
                     currentSlot = "";
                     
-                    updateScreen("Transaction cancelled!\n" +
-                                 "Returned: P" + String.format("%.2f", cashToReturn) + "\n" +
-                                 "Please collect your cash from the chute.");
+                    updateScreen("Transaction cancelled!\n" + "Returned: P" + String.format("%.2f", cashToReturn) + "\nPlease collect your cash from the chute.");
                     return; 
                 }
             }
@@ -2082,6 +2080,7 @@ public class VendingInterface {
 
     /**
      * Sets the title on the frame depending on the vending machine type
+     * @param vm the vending machine created by the program
      */
     public void setframeTitle(VendingMachine vm){
         String vmType = null;
@@ -2184,7 +2183,7 @@ public class VendingInterface {
 
     /**
      * Handles slot data to be managed
-     * @param tomanage is the slot to be updated by admin
+     * @param toManage is the slot to be updated by admin
      */
     public void manageSlot(Slots toManage){
         if (vendingMachine instanceof Special){
@@ -2379,38 +2378,37 @@ public class VendingInterface {
      * @param comboList is the arraylist containing selected items by user
      */
     private void startDispensingAnimation(ArrayList<String> comboList) {
-        double finalChangeDisplay = currentChange;
-        double finalCalorieDisplay = totalCalorie;
+        double changeDisplay = currentChange;
+        double calorieDisplay = totalCalorie;
         String coneName = comboList.size() > 0 ? comboList.get(0) : "Cone";
         String creamName = comboList.size() > 1 ? comboList.get(1) : "Cream";
         String toppingName = comboList.size() > 2 ? comboList.get(2) : "Topping";
 
         javax.swing.Timer timer = new javax.swing.Timer(3000, new java.awt.event.ActionListener() {
-            private int structuralPhase = 1;
-
+            private int phase = 1;
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                if (structuralPhase == 1) {
-                    structuralPhase = 2;
+                if (phase == 1) {
+                    phase = 2;
                     textDisplay.setText("Readying " + coneName + "...");
                     return;
                 }
                 
-                if (structuralPhase == 2) {
-                    structuralPhase = 3;
+                if (phase == 2) {
+                    phase = 3;
                     textDisplay.setText("Scooping up " + creamName + "...");
                     return;
                 }
-                if (structuralPhase == 3) {
-                    structuralPhase = 4;
+                if (phase == 3) {
+                    phase = 4;
                     textDisplay.setText("Finishing with " + toppingName + "...");
                     return;
                 }
-                textDisplay.setText("Dispensed: Ice Cream Combo\n" + "Change: P" + String.format("%.2f", finalChangeDisplay) + "\nCalories: " + String.format("%.2f", finalCalorieDisplay) + "\nPlease claim your item and change from the chute!");
+                textDisplay.setText("Dispensed: Ice Cream Combo\n" + "Change: P" + String.format("%.2f", changeDisplay) + "\nCalories: " + String.format("%.2f", calorieDisplay) + "\nPlease claim your item and change from the chute!");
                 ((javax.swing.Timer)e.getSource()).stop();
             }
         });
-        textDisplay.setText("Processing order verification details...");
+        textDisplay.setText("Processing order details...");
         timer.start();
     }
 
@@ -2448,36 +2446,36 @@ public class VendingInterface {
         }
 
         if (selectedSlot == null || targetItem == null || targetItem.getName().equals("N/A")) {
-            textDisplay.setText("Error: Invalid or empty slot selected!\nRe-enter code for current step.\n> ");
+            textDisplay.setText("Error: Empty slot selected!\nRe-enter code for current step.\n> ");
             currentSlot = "";
             return;
         }
         if (selectedSlot.getCurrentStock() <= 0) {
-            textDisplay.setText("Error: Slot " + currentSlot + " is Out of Stock!\nRe-enter code for current step.\n> ");
+            textDisplay.setText("Error: " + currentSlot + " is Out of Stock!\nRe-enter code for current step.\n> ");
             currentSlot = "";
             return;
         }
         if (ongoingComboList.size() == 0) {
             if (enteredRow != 'C') {
-                textDisplay.setText("Invalid Selection!\nYou must choose a CONE first.\nCones are always located on Row C.\n> ");
+                textDisplay.setText("Invalid Selection!\nYou must choose a Cone first.\nCones are always located on Row C.\n> ");
                 currentSlot = "";
                 return;
             }
             ongoingComboList.add(targetItem.getName());
-            textDisplay.setText("Cone selected: " + targetItem.getName() + "\n\n" + "Now enter slot code\n" + "for your CREAM flavor (Row B):\n" + "(Type code and click Check)\n" + "> ");
+            textDisplay.setText("Cone selected: " + targetItem.getName() + "\n\n" + "Now enter slot code\n" + "for your Cream flavor (Row B):\n" + "(Type code and click Check)\n" + "> ");
         } 
         else if (ongoingComboList.size() == 1) {
             if (enteredRow != 'B') {
-                textDisplay.setText("Invalid Selection!\nYou must choose a CREAM flavor next.\nFlavors are always located on Row B.\n> ");
+                textDisplay.setText("Invalid Selection!\nYou must choose a Cream flavor next.\nFlavors are always located on Row B.\n> ");
                 currentSlot = "";
                 return;
             }
             ongoingComboList.add(targetItem.getName());
-            textDisplay.setText("Cream selected: " + targetItem.getName() + "\n\n" + "Finally, enter slot code\n" + "for your TOPPING (Row A):\n" + "(Type code and click Check)\n" + "> ");
+            textDisplay.setText("Cream selected: " + targetItem.getName() + "\n\n" + "Finally, enter slot code\n" + "for your Toppings (Row A):\n" + "(Type code and click Check)\n" + "> ");
         } 
         else if (ongoingComboList.size() == 2) {
             if (enteredRow != 'A') {
-                textDisplay.setText("Invalid Selection!\nYou must choose a TOPPING for the final step.\nToppings are always located on Row A.\n> ");
+                textDisplay.setText("Invalid Selection!\nYou must choose a Topping for the final step.\nToppings are always located on Row A.\n> ");
                 currentSlot = "";
                 return;
             }

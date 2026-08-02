@@ -10,6 +10,13 @@ public class VendingMachine {
     
     private CashStorage cashVault;
     private CashStorage userCash;
+    /**
+     * The slots that hold the stock of the vending machine
+     * Because this field is protected, subclass implementations can directly manipulate 
+     * or reallocate the item slots during initialization.
+     * 
+     * @see Slots
+     */
     protected ArrayList<Slots> itemSlots;
 
     /**
