@@ -1475,6 +1475,34 @@ public class VendingInterface {
                 }
             }
         });
+        itemPrice.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e){
+                char c = e.getKeyChar();
+                String currentprice = itemPrice.getText();
+
+                int caretPos = itemPrice.getCaretPosition();
+                
+                if(c == '.'){
+                    if(currentprice.contains(".")){
+                        e.consume();
+                    }
+                    return;
+                }
+                if(Character.isDigit(c)){
+                    e.consume();
+                }
+                if(currentprice.contains(".")){
+                    int dotIndex = currentprice.indexOf(".");
+                    if(caretPos > dotIndex){
+                        String cent = currentprice.substring(dotIndex + 1);
+                        if (cent.length()>=2){
+                            e.consume();
+                        }
+                    }
+                }
+            }
+        });
 
         JLabel manageItemCalorie = new JLabel("Calories:");
         manageItemCalorie.setFont(new Font("Arial Black", Font.PLAIN, 18));
@@ -1491,6 +1519,34 @@ public class VendingInterface {
                 }
             }
         });
+        itemCalorie.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e){
+                char c = e.getKeyChar();
+                String currentprice = itemCalorie.getText();
+
+                int caretPos = itemCalorie.getCaretPosition();
+                
+                if(c == '.'){
+                    if(currentprice.contains(".")){
+                        e.consume();
+                    }
+                    return;
+                }
+                if(Character.isDigit(c)){
+                    e.consume();
+                }
+                if(currentprice.contains(".")){
+                    int dotIndex = currentprice.indexOf(".");
+                    if(caretPos > dotIndex){
+                        String cent = currentprice.substring(dotIndex + 1);
+                        if (cent.length()>=2){
+                            e.consume();
+                        }
+                    }
+                }
+            }
+        });
 
         JLabel manageItemCount = new JLabel("Quantity:");
         manageItemCount.setFont(new Font("Arial Black", Font.PLAIN, 18));
@@ -1504,6 +1560,28 @@ public class VendingInterface {
             public void focusLost(java.awt.event.FocusEvent e) {
                 if (itemCount.getText().trim().isEmpty()) {
                     itemCount.setText("0");
+                }
+            }
+        });
+        itemCount.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e){
+                char c = e.getKeyChar();
+                String currString = itemCount.getText();
+                if(!Character.isDigit(c)){
+                    e.consume();
+                    return;
+                }
+                if(currString.length() >= 2){
+                    e.consume();
+                    return;
+                }
+                if(currString.contains("1")){
+                    if(c != '0'){
+                        e.consume();
+                    }
+                } else if (!currString.isEmpty() && !currString.contains("1")){
+                    e.consume();
                 }
             }
         });
@@ -1544,14 +1622,64 @@ public class VendingInterface {
         manageBack.setText("Go Back");
         manageBack.setBounds(295, 475, 90, 40);
         manageBack.addActionListener(e -> {
-                swap.show(content, "ModifySlot");
+            boolean isChanged = false;
+            if (managingSlot != null) {
+                String currNameText = itemName.getText();
+                String currPriceText = itemPrice.getText();
+                String currCalorieText = itemCalorie.getText();
+                String currCountText = itemCount.getText();
+
+                double parsedPrice = currPriceText.isBlank() ? 0.0 : Double.parseDouble(currPriceText);
+                double parsedCalorie = currCalorieText.isBlank() ? 0.0 : Double.parseDouble(currCalorieText);
+                int parsedCount = currCountText.isBlank() ? 0 : Integer.parseInt(currCountText);
+
+                boolean nameChanged = !currNameText.equalsIgnoreCase(currItemName == null ? "" : currItemName);
+                boolean priceChanged = (parsedPrice != currItemPrice);
+                boolean calorieChanged = (parsedCalorie != currItemCalorie);
+                boolean countChanged = (parsedCount != currItemCount);
+
+                if (nameChanged || priceChanged || calorieChanged || countChanged) {
+                    isChanged = true;
+                }
+            }
+            if (isChanged) {
+                int response = JOptionPane.showConfirmDialog(manageSelectedSlot, "You have unsaved changes. Are you sure you want to go back and discard them?", "Unsaved Changes", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (response == JOptionPane.YES_OPTION) {
+                    this.managingSlot = null;
+                    this.currItemName = null;
+                    this.currItemPrice = 0.0;
+                    this.currItemCalorie = 0.0;
+                    this.currItemCount = 0;
+                    this.currItemType = null;
+                    updateSlotNames(vendingMachine);
+                    swap.show(content, "ModifySlot");
+                }
+            }
+            this.managingSlot = null;
+            this.currItemName = null;
+            this.currItemPrice = 0.0;
+            this.currItemCalorie = 0.0;
+            this.currItemCount = 0;
+            this.currItemType = null;
+            updateSlotNames(vendingMachine);
+            swap.show(content, "ModifySlot");
+        });
+
+        JButton reset = new JButton();
+        reset.setText("Reset");
+        reset.setBounds(170, 430, 90, 40);
+        reset.addActionListener(e -> {
+            if (this.managingSlot != null) {
+                manageSlot(this.managingSlot);
+            }
         });
 
         JButton remove = new JButton();
-        remove.setText("Go Back");
-        remove.setBounds(125, 475, 90, 40);
+        remove.setText("Remove");
+        remove.setBounds(170, 475, 90, 40);
         remove.addActionListener(e -> {
-                //removes slot items
+            removeIteminSlot();
+            JOptionPane.showMessageDialog(manageSelectedSlot, "Slot inventory cleared completely!");
         });
 
 
@@ -1559,66 +1687,82 @@ public class VendingInterface {
         updateSlot.setText("Update");
         updateSlot.setBounds(45, 475, 90, 40);
         updateSlot.addActionListener(e -> {
-            String typedName = itemName.getText();
-            String typedPrice = itemPrice.getText();
-            String typedCalorie = itemCalorie.getText();
-            String typedCount = itemCount.getText();
-            String typedType = itemType.getText();
+        String typedName = itemName.getText().trim();
+        String typedPrice = itemPrice.getText().trim();
+        String typedCalorie = itemCalorie.getText().trim();
+        String typedCount = itemCount.getText().trim();
+        String typedType = itemType.getText().trim();
 
-            String comparePrice = typedPrice.isBlank() ? "0.0" : typedPrice;
-            String compareCalorie = typedCalorie.isBlank() ? "0.0" : typedCalorie;
-            String compareCount = typedCount.isBlank() ? "0" : typedCount;
+        String safePrice = typedPrice.isBlank() ? "0.0" : typedPrice;
+        String safeCalorie = typedCalorie.isBlank() ? "0.0" : typedCalorie;
+        String safeCount = typedCount.isBlank() ? "0" : typedCount;
+
+        double parsedPrice = Double.parseDouble(safePrice);
+        double parsedCalorie = Double.parseDouble(safeCalorie);
+        int parsedCount = Integer.parseInt(safeCount);
+        
+        if (typedName.isBlank()) {
+            JOptionPane.showMessageDialog(manageSelectedSlot, "Item name must exist! Error!");
+        } else {
             Item currItem = managingSlot.getItem();
-
-            if(typedName.isBlank()){
-                JOptionPane.showMessageDialog(manageSelectedSlot, "Item must exist! Error!");
-            } else if (currItem == null || !typedName.equalsIgnoreCase(currItem.getName())){
+            if (currItem == null || !typedName.equalsIgnoreCase(currItem.getName())) {    
                 currItemName = typedName;
-                vendingMachine.generateReceipt();
+                vendingMachine.generateReceipt(); 
+                
                 managingSlot.getItemList().clear();
                 managingSlot.setBeforeStock(0);
                 managingSlot.resetSold();
-                managingSlot.setPrice(Double.parseDouble(typedPrice));
-                if(vendingMachine instanceof Regular){
-                    managingSlot.setItem(new Item(typedName, Double.parseDouble(typedCalorie)));
-                    for(int i = 0; i < Integer.parseInt(typedCount); i++){
-                        managingSlot.getItemList().add(new Item(typedName, Double.parseDouble(typedCalorie)));
+                managingSlot.setPrice(parsedPrice);
+
+                if (vendingMachine instanceof Regular) {
+                    managingSlot.setItem(new Item(typedName, parsedCalorie));
+                    for (int i = 0; i < parsedCount; i++) {
+                        managingSlot.getItemList().add(new Item(typedName, parsedCalorie));
                     }
-                } else if (vendingMachine instanceof Special){
-                    managingSlot.setItem(new Item(typedName, Double.parseDouble(typedCalorie), typedType));
-                    for(int i = 0; i < Integer.parseInt(typedCount); i++){
-                        managingSlot.getItemList().add(new Item(typedName, Double.parseDouble(typedCalorie), typedType));
+                } else if (vendingMachine instanceof Special) {
+                    managingSlot.setItem(new Item(typedName, parsedCalorie, typedType));
+                    for (int i = 0; i < parsedCount; i++) {
+                        managingSlot.getItemList().add(new Item(typedName, parsedCalorie, typedType));
                     }
                 }
-                currItemPrice = Double.parseDouble(comparePrice);
-                currItemCount = Integer.parseInt(compareCount);
-                currItemCalorie = Double.parseDouble(compareCalorie);
-            } else if (typedName.equalsIgnoreCase(currItem.getName())){
-                currItemPrice = Double.parseDouble(typedPrice);
-                managingSlot.setPrice(currItemPrice);
-                currItemCalorie = Double.parseDouble(typedCalorie);
-                int targetCount = Integer.parseInt(typedCount);
-                if(vendingMachine instanceof Regular){
-                    managingSlot.setItem(new Item(typedName, currItemCalorie));
-                } else if(vendingMachine instanceof Special){
-                    managingSlot.setItem(new Item(typedName, currItemCalorie, typedType));
-                }
-                managingSlot.getItemList().clear();
+                currItemPrice = parsedPrice;
+                currItemCount = parsedCount;
+                currItemCalorie = parsedCalorie;
+                if (vendingMachine instanceof Special) currItemType = typedType;
+
+                JOptionPane.showMessageDialog(manageSelectedSlot, "New Item Assigned Successfully!");
+
+            } else if (typedName.equalsIgnoreCase(currItem.getName())) {
                 
-                if (vendingMachine instanceof Regular){
-                    for(int i = 0; i < targetCount; i++){
-                        managingSlot.getItemList().add(new Item(typedName, currItemCalorie));
+                managingSlot.setPrice(parsedPrice);
+                
+                if (vendingMachine instanceof Regular) {
+                    managingSlot.setItem(new Item(typedName, parsedCalorie));
+                } else if (vendingMachine instanceof Special) {
+                    managingSlot.setItem(new Item(typedName, parsedCalorie, typedType));
+                }
+
+                managingSlot.getItemList().clear();
+                if (vendingMachine instanceof Regular) {
+                    for (int i = 0; i < parsedCount; i++) {
+                        managingSlot.getItemList().add(new Item(typedName, parsedCalorie));
                     }
-                } else if (vendingMachine instanceof Special){
-                    for(int i = 0; i < targetCount; i++){
-                        managingSlot.getItemList().add(new Item(typedName, currItemCalorie, typedType));
+                } else if (vendingMachine instanceof Special) {
+                    for (int i = 0; i < parsedCount; i++) {
+                        managingSlot.getItemList().add(new Item(typedName, parsedCalorie, typedType));
                     }
                 }
-                managingSlot.setBeforeStock(currItemCount);
+
+                managingSlot.setBeforeStock(currItemCount); 
                 currItemCount = managingSlot.getCurrentStock();
-                JOptionPane.showMessageDialog(manageSelectedSlot, "Item Assigned Successfully!");
-            } 
-        });
+                currItemPrice = parsedPrice;
+                currItemCalorie = parsedCalorie;
+                if (vendingMachine instanceof Special) currItemType = typedType;
+
+                JOptionPane.showMessageDialog(manageSelectedSlot, "Item Updated Successfully!");
+            }
+        }
+    });
 
         
         content.add(vendingfront, "VendingFront");
@@ -1765,6 +1909,8 @@ public class VendingInterface {
         manageSelectedSlot.add(itemCount);
         manageSelectedSlot.add(itemPlus);
         manageSelectedSlot.add(itemMinus);
+        manageSelectedSlot.add(remove);
+        manageSelectedSlot.add(reset);
 
 
         java.awt.event.ActionListener padListener = e -> {
@@ -1894,15 +2040,15 @@ public class VendingInterface {
         slotDisplay.setToolTipText(null);
         textDisplay.setToolTipText(null);
         denomButton.setToolTipText(null);
-        displayA1.setText(vm.itemSlots.get(0).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(0).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(0).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(0).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(0).getCurrentStock()));
-        displayA2.setText(vm.itemSlots.get(1).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(1).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(1).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(1).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(1).getCurrentStock()));
-        displayA3.setText(vm.itemSlots.get(2).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(2).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(2).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(2).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(2).getCurrentStock()));
-        displayB1.setText(vm.itemSlots.get(3).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(3).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(3).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(3).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(3).getCurrentStock()));
-        displayB2.setText(vm.itemSlots.get(4).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(4).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(4).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(4).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(4).getCurrentStock()));
-        displayB3.setText(vm.itemSlots.get(5).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(5).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(5).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(5).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(5).getCurrentStock()));
-        displayC1.setText(vm.itemSlots.get(6).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(6).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(6).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(6).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(6).getCurrentStock()));
-        displayC2.setText(vm.itemSlots.get(7).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(7).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(7).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(7).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(7).getCurrentStock()));
-        displayC3.setText(vm.itemSlots.get(8).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(8).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(8).getItem().getCalories()) + "kcal\nStock: " + (vm.itemSlots.get(8).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(8).getCurrentStock()));
+        displayA1.setText(vm.itemSlots.get(0).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(0).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(0).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(0).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(0).getCurrentStock()));
+        displayA2.setText(vm.itemSlots.get(1).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(1).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(1).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(1).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(1).getCurrentStock()));
+        displayA3.setText(vm.itemSlots.get(2).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(2).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(2).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(2).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(2).getCurrentStock()));
+        displayB1.setText(vm.itemSlots.get(3).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(3).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(3).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(3).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(3).getCurrentStock()));
+        displayB2.setText(vm.itemSlots.get(4).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(4).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(4).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(4).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(4).getCurrentStock()));
+        displayB3.setText(vm.itemSlots.get(5).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(5).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(5).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(5).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(5).getCurrentStock()));
+        displayC1.setText(vm.itemSlots.get(6).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(6).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(6).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(6).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(6).getCurrentStock()));
+        displayC2.setText(vm.itemSlots.get(7).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(7).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(7).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(7).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(7).getCurrentStock()));
+        displayC3.setText(vm.itemSlots.get(8).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(8).getPrice()) + ")\n" + String.format("%.2f", vm.itemSlots.get(8).getItem().getCalories()) + "kcal\nQty: " + (vm.itemSlots.get(8).getItemList().isEmpty() ? "N/A" : vm.itemSlots.get(8).getCurrentStock()));
 
         updateScreen(null);
         denomButton.setVisible(false);
@@ -2006,7 +2152,7 @@ public class VendingInterface {
         }
         if(vm.itemSlots.get(2).getItem() != null){
             A3 = vm.itemSlots.get(2).getItem().getName();
-            slotA3Field.setText(A2);
+            slotA3Field.setText(A3);
         } else {
             slotA3Field.setText("N/A");
             A3 = null;
@@ -2053,5 +2199,49 @@ public class VendingInterface {
             slotC3Field.setText("N/A");
             C3 = null;
         } 
+    }
+
+    public void applySlotChanges(){
+        if(this.managingSlot != null && this.managingSlot.getItem()!= null){
+            String newName = itemName.getText().trim();
+            double newPrice = Double.parseDouble(itemPrice.getText());
+            double newCalorie = Double.parseDouble(itemCalorie.getText());
+            int targetStock = Integer.parseInt(itemCount.getText());
+
+            this.managingSlot.getItemList().clear(); 
+
+            this.managingSlot.setPrice(newPrice);
+            for (int i = 0; i < targetStock; i++) {
+                Item individualItem;
+                if (vendingMachine instanceof Special) {
+                    individualItem = new Item(newName, newCalorie, this.currItemType);
+                } else {
+                    individualItem = new Item(newName, newCalorie);
+                }
+                this.managingSlot.getItemList().add(individualItem);
+            }
+            this.currItemName = newName;
+            this.currItemPrice = newPrice;
+            this.currItemCalorie = newCalorie;
+            this.currItemCount = targetStock;
+        }
+    }
+    
+    public void removeIteminSlot(){
+        this.managingSlot.getItemList().clear();
+        this.managingSlot.setItem(null);
+        this.managingSlot.setPrice(0.0);
+        this.managingSlot.setBeforeStock(0);
+        this.managingSlot.resetSold();
+
+        this.currItemName = null;
+        this.currItemPrice = 0.0;
+        this.currItemCalorie = 0.0;
+        this.currItemCount = 0;
+
+        itemName.setText("");
+        itemPrice.setText("0.0");
+        itemCalorie.setText("0.0");
+        itemCount.setText("0");
     }
 }
