@@ -1,27 +1,45 @@
 import java.util.*;
 import java.io.FileWriter;
 import java.io.IOException;
-
+/**
+ * Constructor class for Vending machine object
+ * @author Jasper Isiah Geronimo
+ * @author John Kendrick Constantino
+ */
 public class VendingMachine {
     
     private CashStorage cashVault;
     private CashStorage userCash;
     protected ArrayList<Slots> itemSlots;
 
+    /**
+     * Creates a vending machine object
+     */
     public VendingMachine(){
         this.cashVault = new CashStorage();
         this.itemSlots = new ArrayList<Slots>();
         this.userCash = new CashStorage();
     }
 
+    /**
+     * Gets the Cash Storage of the Vending Machine
+     * @return the Cash Storage of the Vending Machine
+     */
     public CashStorage getCashVault(){
         return this.cashVault;
     }
 
+    /**
+     * Gets the temporary cash storage of the customers of the vending machine
+     * @return the temporary cash storage of the customers of the vending machine
+     */
     public CashStorage getUserCash(){
         return this.userCash;
     }
 
+    /**
+     * Returns cash to the user and resets the temporary cash storage
+     */
     public void returnCash() {
         for (Denomination d : userCash.getCashList()) {
             if (d.getQuantity() > 0) {
@@ -31,6 +49,9 @@ public class VendingMachine {
         userCash = new CashStorage();
     }
 
+    /**
+     * Generates a file that contains audit and transactions of the vending machine since last stocking
+     */
     public void generateReceipt() {
         try (FileWriter writter = new FileWriter("Receipt.txt")) { 
             double totalSalesRevenue = 0;
@@ -82,7 +103,10 @@ public class VendingMachine {
         }
     }
 
-    // carry overs from MCO1 below
+    /**
+     * Checks the total value of the denominations inserted
+     * @return total ammount of cash inserted 
+     */
     public double checkCash() {
         double totalCash = 0;
         for (Denomination d : getUserCash().getCashList()) {
@@ -91,6 +115,11 @@ public class VendingMachine {
         return totalCash;
     }
 
+    /**
+     * checks for change availability by simulating the transaction first
+     * @param changeAmount the change needed to be provided by the vending machine
+     * @return true if change is available, else false
+     */
     public boolean checkChangeAvailability(double changeAmount) {
         int i;
         CashStorage tempCashList;
@@ -120,6 +149,11 @@ public class VendingMachine {
         }
     }
 
+    /**
+     * dispenses the item chosen to be purchased by the user
+     * @param name the name of the Item that is being purchased
+     * @return Item to be dispensed if item exists and has stock, else null
+     */
     public Item dispenseItem(String name) {
         boolean itemFound = false;
         Item item = null;
@@ -146,6 +180,10 @@ public class VendingMachine {
         return item;
     }
 
+    /**
+     * gives the change to the user after a successful transaction
+     * @param changeAmount the change needed to be provided by the vending machine
+     */
     public void giveChange(double changeAmount) {
         int i;
         Denomination temp;

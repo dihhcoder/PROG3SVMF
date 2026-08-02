@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class VendingInterface {
 
@@ -142,6 +143,8 @@ public class VendingInterface {
     private int currItemCount;
     private String currItemType;
 
+    private boolean comboTime;
+    private ArrayList<String> ongoingComboList = new ArrayList<>();
 
     public VendingInterface(){
 
@@ -244,6 +247,29 @@ public class VendingInterface {
         denomin = new JComboBox<>(moneyList);
         denomin.setBounds(290, 360, 100, 20);
         denomin.setFocusable(false);
+
+        JButton comboButton = new JButton();
+        comboButton.setBounds(260, 360 , 20, 20);
+        comboButton.setToolTipText("Press to order a combo snack!");
+        if(vendingMachine instanceof Special){
+            comboButton.setVisible(true);
+        } else if (vendingMachine instanceof Regular){
+            comboButton.setVisible(false);
+        }
+        comboButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e){
+                comboTime = true;
+                currentSlot = "";
+                ongoingComboList.clear();
+                textDisplay.setText("--- COMBO MENU ---\n" +
+                            "Please enter the slot code\n" +
+                            "for your CONE first:\n" +
+                            "Type code then hit Check\n" +
+                            "> ");
+            }
+        });
+
 
         insert = new JButton();
         insert.setText("Insert");
@@ -1215,6 +1241,7 @@ public class VendingInterface {
         slotBack.setText("Go Back");
         slotBack.setBounds(295, 475, 90, 40);
         slotBack.addActionListener(e -> {
+                refreshSlotDisplays();
                 swap.show(content, "VendingFront");
         });
 
@@ -1770,6 +1797,7 @@ public class VendingInterface {
         content.add(modifyVault, "ModifyVault");
         content.add(manageSelectedSlot, "ManageSlot");
         vendingmach.add(content, BorderLayout.CENTER);
+        vendingfront.add(comboButton);
         vendingfront.add(slotDisplay);
         vendingfront.add(dispenseDisplay);
         vendingfront.add(dispDisplay);
@@ -1928,10 +1956,36 @@ public class VendingInterface {
         twoButton.addActionListener(padListener);
         threeButton.addActionListener(padListener);
 
-        xButton.addActionListener(e -> {
+            xButton.addActionListener(e -> {
+            if (vendingMachine != null) {
+                double cashToReturn = vendingMachine.getUserCash().getTotalValue();
+                
+                if (cashToReturn > 0) {
+                    currentChange = cashToReturn;
+                    inChute = true;
+                    currentItem = "Returned Cash";
+                    currentCash = 0.00;
+                    
+                    vendingMachine.getUserCash().getCashList().clear();
+                    
+                    comboTime = false;
+                    ongoingComboList.clear();
+                    currentSlot = "";
+                    
+                    updateScreen("Transaction cancelled!\n" +
+                                 "Returned: P" + String.format("%.2f", cashToReturn) + "\n" +
+                                 "Please collect your cash from the chute.");
+                    return; 
+                }
+            }
+            if (comboTime) {
+                comboTime = false;
+                ongoingComboList.clear();
+            }
             currentSlot = "";
             updateScreen(null);
         });
+
 
         bSButton.addActionListener(e -> {
             if (currentSlot.length() > 0) {
@@ -1951,6 +2005,14 @@ public class VendingInterface {
 
         checkButton.addActionListener(e -> {
             if (vendingMachine != null) {
+                if (comboTime) {
+                    if (currentSlot.length() < 2) {
+                        textDisplay.setText("Please enter a valid 2-digit slot code first!\n> " + currentSlot);
+                        return;
+                    }
+                    handleComboSelectionStep();
+                    return;
+                }
                 String input = currentSlot;
                 int slotIndex = -1;
                 
@@ -2225,9 +2287,6 @@ public class VendingInterface {
         }
     }
 
-
-    
-
     public void applySlotChanges(){
         if(this.managingSlot != null && this.managingSlot.getItem()!= null){
             String newName = itemName.getText().trim();
@@ -2270,5 +2329,162 @@ public class VendingInterface {
         itemPrice.setText("0.0");
         itemCalorie.setText("0.0");
         itemCount.setText("0");
+    }
+    
+    private void startDispensingAnimation(ArrayList<String> comboList) {
+        double finalChangeDisplay = currentChange;
+        String coneName = comboList.size() > 0 ? comboList.get(0) : "Cone";
+        String creamName = comboList.size() > 1 ? comboList.get(1) : "Cream";
+        String toppingName = comboList.size() > 2 ? comboList.get(2) : "Topping";
+
+        javax.swing.Timer timer = new javax.swing.Timer(3000, new java.awt.event.ActionListener() {
+            private int structuralPhase = 1;
+
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                if (structuralPhase == 1) {
+                    structuralPhase = 2;
+                    textDisplay.setText("Readying " + coneName + "...");
+                    return;
+                }
+                
+                if (structuralPhase == 2) {
+                    structuralPhase = 3;
+                    textDisplay.setText("Scooping up " + creamName + "...");
+                    return;
+                }
+                if (structuralPhase == 3) {
+                    structuralPhase = 4;
+                    textDisplay.setText("Finishing with " + toppingName + "...");
+                    return;
+                }
+                textDisplay.setText("Dispensed: Ice Cream Combo\n" +
+                                    "Change: P" + String.format("%.2f", finalChangeDisplay) + "\n\n" +
+                                    "Please claim your item and\n" +
+                                    "change from the chute!");
+                
+                ((javax.swing.Timer)e.getSource()).stop();
+            }
+        });
+        textDisplay.setText("Processing order verification details...");
+        timer.start();
+    }
+
+    private void handleComboSelectionStep() {
+        String input = currentSlot;
+        if (input == null || input.length() < 2) {
+            textDisplay.setText("Please enter a valid 2-digit slot code first!\n> " + currentSlot);
+            return;
+        }
+        char enteredRow = Character.toUpperCase(input.charAt(0));
+        int slotIndex = -1;
+        switch(input) {
+            case "A1": slotIndex = 0; break;
+            case "A2": slotIndex = 1; break;
+            case "A3": slotIndex = 2; break;
+            case "B1": slotIndex = 3; break;
+            case "B2": slotIndex = 4; break;
+            case "B3": slotIndex = 5; break;
+            case "C1": slotIndex = 6; break;
+            case "C2": slotIndex = 7; break;
+            case "C3": slotIndex = 8; break;
+        }
+        
+        Slots selectedSlot = null;
+        Item targetItem = null;
+        
+        if (slotIndex != -1 && slotIndex < vendingMachine.itemSlots.size()) {
+            selectedSlot = vendingMachine.itemSlots.get(slotIndex);
+            if (selectedSlot != null) {
+                targetItem = selectedSlot.getItem();
+            }
+        }
+
+        if (selectedSlot == null || targetItem == null || targetItem.getName().equals("N/A")) {
+            textDisplay.setText("Error: Invalid or empty slot selected!\nRe-enter code for current step.\n> ");
+            currentSlot = "";
+            return;
+        }
+        if (selectedSlot.getCurrentStock() <= 0) {
+            textDisplay.setText("Error: Slot " + currentSlot + " is Out of Stock!\nRe-enter code for current step.\n> ");
+            currentSlot = "";
+            return;
+        }
+        if (ongoingComboList.size() == 0) {
+            if (enteredRow != 'C') {
+                textDisplay.setText("Invalid Selection!\nYou must choose a CONE first.\nCones are always located on Row C.\n> ");
+                currentSlot = "";
+                return;
+            }
+            ongoingComboList.add(targetItem.getName());
+            textDisplay.setText("Cone selected: " + targetItem.getName() + "\n\n" +
+                                "Now enter slot code\n" +
+                                "for your CREAM flavor (Row B):\n" +
+                                "(Type code and click Check)\n" +
+                                "> ");
+        } 
+        else if (ongoingComboList.size() == 1) {
+            if (enteredRow != 'B') {
+                textDisplay.setText("Invalid Selection!\nYou must choose a CREAM flavor next.\nFlavors are always located on Row B.\n> ");
+                currentSlot = "";
+                return;
+            }
+            ongoingComboList.add(targetItem.getName());
+            textDisplay.setText("Cream selected: " + targetItem.getName() + "\n\n" +
+                                "Finally, enter slot code\n" +
+                                "for your TOPPING (Row A):\n" +
+                                "(Type code and click Check)\n" +
+                                "> ");
+        } 
+        else if (ongoingComboList.size() == 2) {
+            if (enteredRow != 'A') {
+                textDisplay.setText("Invalid Selection!\nYou must choose a TOPPING for the final step.\nToppings are always located on Row A.\n> ");
+                currentSlot = "";
+                return;
+            }
+            ongoingComboList.add(targetItem.getName());
+            comboTime = false;
+            
+            if (!inChute) {
+                boolean success = false;
+                if (vendingMachine instanceof Special) {
+                    success = ((Special) vendingMachine).processCombo(ongoingComboList);
+                }
+                if (success) {
+                    double calculationPrice = 0.0;
+                    for (String name : ongoingComboList) {
+                        for (Slots s : vendingMachine.itemSlots) {
+                            if (s.getItem() != null && s.getItem().getName().equalsIgnoreCase(name)) {
+                                calculationPrice += s.getPrice();
+                                break;
+                            }
+                        }
+                    }
+                    double remainingChange = currentCash - calculationPrice;
+                    currentCash = 0.00;
+                    if (vendingMachine.getUserCash() != null && vendingMachine.getUserCash().getCashList() != null) {
+                        vendingMachine.getUserCash().getCashList().clear();
+                    }
+                    inChute = true;
+                    currentItem = "Custom Ice Cream Combo";
+                    currentChange = remainingChange;
+                    startDispensingAnimation(ongoingComboList);
+                    refreshSlotDisplays(); 
+                } else {
+                    double cashToReturn = vendingMachine.getUserCash().getTotalValue();
+                    if (cashToReturn > 0){
+                        currentChange = cashToReturn;
+                        inChute = true;
+                        currentItem = "Returned Cash";
+                        currentCash = 0.0;
+                    } else {
+                        textDisplay.setText("Transaction Failed!\nCheck stock levels or ensure you inserted enough cash.");
+                    }
+                }
+            } else {
+                textDisplay.setText("Please claim your previous item from the chute first!");
+            }
+        }
+        currentSlot = "";
     }
 }

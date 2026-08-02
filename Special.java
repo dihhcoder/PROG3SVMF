@@ -1,36 +1,35 @@
 import java.util.ArrayList;
-
+/**
+ * Constructor class for special Vending Machine
+ * @author Jasper Isiah Geronimo
+ * @author John Kendrick Constantino
+ */
 public class Special extends VendingMachine {
-    
+    /**
+     * Creates a special vending machine
+     * Inherits vending machine attributes and methods
+     */
     public Special() {
         super();
-        
         itemSlots.clear();
-        
-        Slots coneSlot = new Slots(new Item(null, 0, "Cone"), 0);
-        Slots creamSlot = new Slots(new Item(null, 0, "Cream"), 0);
-        Slots toppingSlot = new Slots(new Item(null, 0, "Topping"), 0);
-        
-        for (int i = 0; i < 10; i++) {
-            coneSlot.addItem();
-            creamSlot.addItem();
-            toppingSlot.addItem();
+        for (int i = 0; i < 3; i++) {
+            itemSlots.add(new Slots(new Item("N/A", 0, "Topping"), 0));
         }
 
         for (int i = 0; i < 3; i++) {
-            itemSlots.add(toppingSlot);
+            itemSlots.add(new Slots(new Item("N/A", 0, "Cream"), 0));
         }
 
         for (int i = 0; i < 3; i++) {
-            itemSlots.add(creamSlot);
-        }
-
-        for (int i = 0; i < 3; i++) {
-            itemSlots.add(coneSlot);
+            itemSlots.add(new Slots(new Item("N/A", 0, "Cone"), 0));
         }
     }
 
-
+    /**
+     * Checks if item combos fit a valid combination
+     * Also checks for payment errors in the combination process
+     * @return true if process is valid, else false
+     */
     public boolean processCombo(ArrayList<String> comboList) {
 
         double totalPrice = 0.0;
@@ -45,7 +44,7 @@ public class Special extends VendingMachine {
         //note for myself in MP DEMO since I'll legit forget this type of for works by 
         //checking from first to last element of the arraylist, 
             for (Slots slot : itemSlots) {
-                if (slot.getItem() != null && slot.getItem().getName().equalsIgnoreCase(targetName)) {
+                if (slot.getItem() != null && slot.getItem().getName().equalsIgnoreCase(targetName) && slot.getItem().getName() != null) {
                     
                     if (slot.getCurrentStock() > 0) { 
                         itemFoundAndStocked = true;
