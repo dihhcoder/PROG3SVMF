@@ -162,4 +162,17 @@ public class CashStorage
             }
         }
     }
+
+    /**
+     * Calculates the total monetary value stored on the cash storage
+     * @return The total sum of all denominations in the cash storage
+     */
+    public double getTotalValue() {
+        double total = 0.0;
+        for (Denomination denom : this.cashList) {
+            total += denom.getValue() * denom.getQuantity();
+        }
+        return total;
+    }
+
 }

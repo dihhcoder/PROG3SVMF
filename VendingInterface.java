@@ -25,9 +25,25 @@ public class VendingInterface {
     private JButton denomButton;
     private JComboBox<String> denomin;
     private JTextArea textDisplay;
-    private boolean isAdmin = false;
+    private JTextArea displayA1;
+    private JTextArea displayA2;
+    private JTextArea displayA3;
+    private JTextArea displayB1;
+    private JTextArea displayB2;
+    private JTextArea displayB3;
+    private JTextArea displayC1;
+    private JTextArea displayC2;
+    private JTextArea displayC3;
 
     private VendingMachine vendingMachine;
+
+    private boolean isAdmin = false;
+    private boolean inChute = false;
+    private double currentCash = 0.0;
+    private double currentChange = 0.0;
+    private String currentSlot = "";
+    private String currentItem = "";
+    
 
     public VendingInterface(){
 
@@ -37,6 +53,9 @@ public class VendingInterface {
         vendingmach.setLayout(new BorderLayout());
         vendingmach.setLocationRelativeTo(null);
         vendingmach.setResizable(false);
+
+        CardLayout swap = new CardLayout();
+        JPanel content = new JPanel(swap);
 
         vendingfront = new JPanel();
         vendingfront.setBackground(new Color(126, 217, 87));
@@ -66,7 +85,14 @@ public class VendingInterface {
         dispenseDisplay.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
-                JOptionPane.showMessageDialog(vendingmach, "Claimed Item");
+                if (inChute) {
+                    JOptionPane.showMessageDialog(vendingmach, "Claimed: " + currentItem + "\nChange: P" + String.format("%.2f", currentChange));
+                    inChute = false;
+                    currentItem = "";
+                    currentChange = 0.0;
+                } else {
+                    JOptionPane.showMessageDialog(vendingmach, "No item to claim");
+                }
             }
         });
 
@@ -75,16 +101,6 @@ public class VendingInterface {
         dispDisplay.setBounds(260, 35, 150, 150);
         dispDisplay.setLayout(null);
         dispDisplay.setVisible(true);
-        dispDisplay.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e){
-                if(isAdmin){
-                        vendingMachine.generateReceipt();
-                        JOptionPane.showMessageDialog(vendingmach, "Audit Receipt successfully generated in folder!");
-                    }
-                }
-            }
-        );
 
         aButton = new JButton();
         aButton.setText("A");
@@ -158,7 +174,23 @@ public class VendingInterface {
         textDisplay = new JTextArea();
         textDisplay.setBounds(10, 10, 130, 130);
         textDisplay.setEditable(false);
-        textDisplay.getCaret().setVisible(false);
+        textDisplay.setLineWrap(true);
+        textDisplay.setWrapStyleWord(true);
+        textDisplay.setHighlighter(null);
+        textDisplay.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e){
+                if(isAdmin){
+                        vendingMachine.generateReceipt();
+                        JOptionPane.showMessageDialog(vendingmach, "Audit Receipt successfully generated in folder!");
+                    }
+                }
+            });
+        textDisplay.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
 
         JLabel a1 = new JLabel();
         a1.setText("A1");
@@ -166,17 +198,53 @@ public class VendingInterface {
         a1.setFont(new Font("Arial Black", Font.PLAIN, 10));
         a1.setForeground(Color.WHITE);
 
+        displayA1 = new JTextArea();
+        displayA1.setBounds(10, 10, 60, 80);
+        displayA1.setEditable(false);
+        displayA1.setLineWrap(true);
+        displayA1.setWrapStyleWord(true);
+        displayA1.setHighlighter(null);
+        displayA1.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
         JLabel a2 = new JLabel();
         a2.setText("A2");
-        a2.setBounds(100, 100, 40, 20);
+        a2.setBounds(103, 100, 40, 20);
         a2.setFont(new Font("Arial Black", Font.PLAIN, 10));
         a2.setForeground(Color.WHITE);
 
+        displayA2 = new JTextArea();
+        displayA2.setBounds(80, 10, 60, 80);
+        displayA2.setEditable(false);
+        displayA2.setLineWrap(true);
+        displayA2.setWrapStyleWord(true);
+        displayA2.setHighlighter(null);
+        displayA2.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
         JLabel a3 = new JLabel();
         a3.setText("A3");
-        a3.setBounds(165, 100, 40, 20);
+        a3.setBounds(172, 100, 40, 20);
         a3.setFont(new Font("Arial Black", Font.PLAIN, 10));
         a3.setForeground(Color.WHITE);
+
+        displayA3 = new JTextArea();
+        displayA3.setBounds(150, 10, 60, 80);
+        displayA3.setEditable(false);
+        displayA3.setLineWrap(true);
+        displayA3.setWrapStyleWord(true);
+        displayA3.setHighlighter(null);
+        displayA3.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
 
         JLabel b1 = new JLabel();
         b1.setText("B1");
@@ -184,17 +252,53 @@ public class VendingInterface {
         b1.setFont(new Font("Arial Black", Font.PLAIN, 10));
         b1.setForeground(Color.WHITE);
 
+        displayB1 = new JTextArea();
+        displayB1.setBounds(10, 130, 60, 80);
+        displayB1.setEditable(false);
+        displayB1.setLineWrap(true);
+        displayB1.setWrapStyleWord(true);
+        displayB1.setHighlighter(null);
+        displayB1.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
         JLabel b2 = new JLabel();
         b2.setText("B2");
-        b2.setBounds(100, 220, 40, 20);
+        b2.setBounds(103, 220, 40, 20);
         b2.setFont(new Font("Arial Black", Font.PLAIN, 10));
         b2.setForeground(Color.WHITE);
 
+        displayB2 = new JTextArea();
+        displayB2.setBounds(80, 130, 60, 80);
+        displayB2.setEditable(false);
+        displayB2.setLineWrap(true);
+        displayB2.setWrapStyleWord(true);
+        displayB2.setHighlighter(null);
+        displayB2.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
         JLabel b3 = new JLabel();
         b3.setText("B3");
-        b3.setBounds(165, 220, 40, 20);
+        b3.setBounds(172, 220, 40, 20);
         b3.setFont(new Font("Arial Black", Font.PLAIN, 10));
         b3.setForeground(Color.WHITE);
+
+        displayB3 = new JTextArea();
+        displayB3.setBounds(150, 130, 60, 80);
+        displayB3.setEditable(false);
+        displayB3.setLineWrap(true);
+        displayB3.setWrapStyleWord(true);
+        displayB3.setHighlighter(null);
+        displayB3.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
 
         JLabel c1 = new JLabel();
         c1.setText("C1");
@@ -202,19 +306,68 @@ public class VendingInterface {
         c1.setFont(new Font("Arial Black", Font.PLAIN, 10));
         c1.setForeground(Color.WHITE);
 
+        displayC1 = new JTextArea();
+        displayC1.setBounds(10, 250, 60, 80);
+        displayC1.setEditable(false);
+        displayC1.setLineWrap(true);
+        displayC1.setWrapStyleWord(true);
+        displayC1.setHighlighter(null);
+        displayC1.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
         JLabel c2 = new JLabel();
         c2.setText("C2");
-        c2.setBounds(100, 340, 40, 20);
+        c2.setBounds(103, 340, 40, 20);
         c2.setFont(new Font("Arial Black", Font.PLAIN, 10));
         c2.setForeground(Color.WHITE);
 
+        displayC2 = new JTextArea();
+        displayC2.setBounds(80, 250, 60, 80);
+        displayC2.setEditable(false);
+        displayC2.setLineWrap(true);
+        displayC2.setWrapStyleWord(true);
+        displayC2.setHighlighter(null);
+        displayC2.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
         JLabel c3 = new JLabel();
         c3.setText("C3");
-        c3.setBounds(165, 340, 40, 20);
+        c3.setBounds(172, 340, 40, 20);
         c3.setFont(new Font("Arial Black", Font.PLAIN, 10));
         c3.setForeground(Color.WHITE);
 
-        vendingmach.add(vendingfront);
+        displayC3 = new JTextArea();
+        displayC3.setBounds(150, 250, 60, 80);
+        displayC3.setEditable(false);
+        displayC3.setLineWrap(true);
+        displayC3.setWrapStyleWord(true);
+        displayC3.setHighlighter(null);
+        displayC3.setCaret(new javax.swing.text.DefaultCaret() {
+            @Override
+            public void paint(java.awt.Graphics g) {   
+                }
+            });
+
+        JPanel modifySlot = new JPanel();
+        modifySlot.setBackground(new Color(126, 217, 87));
+        modifySlot.setPreferredSize(new Dimension(450, 600));
+        modifySlot.setLayout(null);
+        modifySlot.setVisible(false);
+
+        JPanel modifyVault = new JPanel();
+        modifyVault.setBackground(new Color(126, 217, 87));
+        modifyVault.setPreferredSize(new Dimension(450, 600));
+        modifyVault.setLayout(null);
+        modifyVault.setVisible(false);
+
+        content.add(vendingfront, "VendingFront");
+        vendingmach.add(content, BorderLayout.CENTER);
         vendingfront.add(slotDisplay);
         vendingfront.add(dispenseDisplay);
         vendingfront.add(dispDisplay);
@@ -240,11 +393,23 @@ public class VendingInterface {
         slotDisplay.add(c1);
         slotDisplay.add(c2);
         slotDisplay.add(c3);
+        slotDisplay.add(displayA1);
+        slotDisplay.add(displayA2);
+        slotDisplay.add(displayA3);
+        slotDisplay.add(displayB1);
+        slotDisplay.add(displayB2);
+        slotDisplay.add(displayB3);
+        slotDisplay.add(displayC1);
+        slotDisplay.add(displayC2);
+        slotDisplay.add(displayC3);
         dispDisplay.add(textDisplay);
 
         java.awt.event.ActionListener padListener = e -> {
             JButton btn = (JButton) e.getSource();
-            textDisplay.append(btn.getText());
+            if(currentSlot.length() < 2){
+                currentSlot += btn.getText();
+                updateScreen(null);
+            }
         };
 
         aButton.addActionListener(padListener);
@@ -254,12 +419,15 @@ public class VendingInterface {
         twoButton.addActionListener(padListener);
         threeButton.addActionListener(padListener);
 
-        xButton.addActionListener(e -> textDisplay.setText(""));
+        xButton.addActionListener(e -> {
+            currentSlot = "";
+            updateScreen(null);
+        });
 
         bSButton.addActionListener(e -> {
-            String currentText = textDisplay.getText();
-            if (currentText.length() > 0) {
-                textDisplay.setText(currentText.substring(0, currentText.length() - 1));
+            if (currentSlot.length() > 0) {
+                currentSlot = currentSlot.substring(0, currentSlot.length() - 1);
+                updateScreen(null);
             }
         });
 
@@ -267,14 +435,16 @@ public class VendingInterface {
             if (!isAdmin && vendingMachine != null) {
                 double val = Double.parseDouble(denomin.getSelectedItem().toString());
                 vendingMachine.getUserCash().addCash(new Denomination(val, 1));
-                JOptionPane.showMessageDialog(vendingmach, 
-                    "Inserted: P" + val + "\nTotal Inserted: P" + vendingMachine.checkCash());
+                currentCash = vendingMachine.getUserCash().getTotalValue();
+                updateScreen(null);
             }
         });
 
+
+
         checkButton.addActionListener(e -> {
             if (!isAdmin && vendingMachine != null) {
-                String input = textDisplay.getText();
+                String input = currentSlot;
                 int slotIndex = -1;
                 
                 switch(input) {
@@ -288,36 +458,47 @@ public class VendingInterface {
                     case "C2": slotIndex = 7; break;
                     case "C3": slotIndex = 8; break;
                 }
-
-                if (slotIndex != -1 && slotIndex < vendingMachine.itemSlots.size()) {
-                    Slots selectedSlot = vendingMachine.itemSlots.get(slotIndex);
+                if (!inChute) {
                     
-                    if (selectedSlot.getItem() != null && selectedSlot.getCurrentStock() > 0) {
-                        double price = selectedSlot.getPrice();
-                        double userCash = vendingMachine.checkCash();
+                    if (slotIndex != -1 && slotIndex < vendingMachine.itemSlots.size()) {
+                        Slots selectedSlot = vendingMachine.itemSlots.get(slotIndex);
                         
-                        if (userCash >= price) {
-                            double change = userCash - price;
+                        if (selectedSlot.getItem() != null && selectedSlot.getCurrentStock() > 0) {
+                            double price = selectedSlot.getPrice();
+                            double userCash = vendingMachine.checkCash();
                             
-                            if (vendingMachine.checkChangeAvailability(change)) {
-                                Item dispensed = vendingMachine.dispenseItem(selectedSlot.getItem().getName());
-                                vendingMachine.giveChange(change);
-                                JOptionPane.showMessageDialog(vendingmach, 
-                                    "Dispensed: " + dispensed.getName() + "\nChange: P" + change);
-                                textDisplay.setText("");
-                                vendingMachine.getUserCash().getCashList().clear();
+                            if (userCash >= price) {
+                                double change = userCash - price;
+                                
+                                if (vendingMachine.checkChangeAvailability(change)) {
+                                    Item dispensed = vendingMachine.dispenseItem(selectedSlot.getItem().getName());
+                                    vendingMachine.giveChange(change);
+                                    currentCash = 0.00;
+                                    currentSlot = "";
+                                    vendingMachine.getUserCash().getCashList().clear();
+                                    updateScreen("Dispensed: " + dispensed.getName() + "\nChange: P" + String.format("%.2f", change) + "\nPlease claim item and change from the chute.");
+                                    inChute = true;
+                                    currentItem = dispensed.getName();
+                                    currentChange = change;
+                                } else {
+                                    currentSlot = "";
+                                    updateScreen("Not enough change in the machine!");
+                                }
                             } else {
-                                JOptionPane.showMessageDialog(vendingmach, "Not enough change in the machine!");
+                                currentSlot = "";
+                                updateScreen("Insufficient funds!");
                             }
                         } else {
-                            JOptionPane.showMessageDialog(vendingmach, "Insufficient funds! Price is P" + price);
+                            currentSlot = "";
+                            updateScreen("Slot is empty or out of stock!");
                         }
                     } else {
-                        JOptionPane.showMessageDialog(vendingmach, "That slot is empty or out of stock!");
+                        currentSlot = "";
+                        updateScreen("Invalid Slot Code!");
                     }
                 } else {
-                    JOptionPane.showMessageDialog(vendingmach, "Invalid Slot Code!");
-                    textDisplay.setText("");
+                    currentSlot = "";
+                    updateScreen("Please claim your item first!");
                 }
             }
         });
@@ -334,15 +515,35 @@ public class VendingInterface {
         vendingmach.setTitle(vmType);
     }
 
+    public void updateScreen(String errorMessage){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Current Cash Total: P").append(String.format("%.2f", currentCash));
+        if (errorMessage != null) {
+            sb.append("\n").append(errorMessage);
+        }
+        sb.append("\nEnter Slot Code: \n>").append(currentSlot);
+        textDisplay.setText(sb.toString());
+    }
+
     public void testUser(VendingMachine vm, JFrame back){
         this.menuFrame = back;
         this.isAdmin = false;
         this.vendingMachine = vm;
         dispenseDisplay.setToolTipText("Claim Ordered Item");
         slotDisplay.setToolTipText(null);
-        dispDisplay.setToolTipText(null);
+        textDisplay.setToolTipText(null);
         denomButton.setToolTipText(null);
-        
+        displayA1.setText(vm.itemSlots.get(0).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(0).getPrice()) + ")");
+        displayA2.setText(vm.itemSlots.get(1).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(1).getPrice()) + ")");
+        displayA3.setText(vm.itemSlots.get(2).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(2).getPrice()) + ")");
+        displayB1.setText(vm.itemSlots.get(3).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(3).getPrice()) + ")");
+        displayB2.setText(vm.itemSlots.get(4).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(4).getPrice()) + ")");
+        displayB3.setText(vm.itemSlots.get(5).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(5).getPrice()) + ")");
+        displayC1.setText(vm.itemSlots.get(6).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(6).getPrice()) + ")");
+        displayC2.setText(vm.itemSlots.get(7).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(7).getPrice()) + ")");
+        displayC3.setText(vm.itemSlots.get(8).getItem().getName() + " (P" + String.format("%.2f", vm.itemSlots.get(8).getPrice()) + ")");
+
+        updateScreen(null);
         denomButton.setVisible(false);
         setframeTitle(vm);
         back.setVisible(false);
@@ -353,7 +554,7 @@ public class VendingInterface {
         testUser(vm, back);
         this.isAdmin = true;
         slotDisplay.setToolTipText("Manage Items in Slots");
-        dispDisplay.setToolTipText("Print audit statements");
+        textDisplay.setToolTipText("Print audit statements");
         denomButton.setToolTipText("Manage Cash Vault");
         
         denomButton.setVisible(true);
